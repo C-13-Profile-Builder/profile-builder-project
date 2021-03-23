@@ -2,6 +2,7 @@ import React, { Component,useState } from 'react'
 import {Button,Navbar,Nav,Form} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
+import Homepage from './homepage'
 function Loginpage(){
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
@@ -22,7 +23,10 @@ function Loginpage(){
         email:email,
         pwd:pwd,
     }).then(()=>{
-        alert('Successful Insert');
+        const homepage=document.querySelector('.Homepage')
+        const firstpage=document.querySelector('.LoginRegister')
+        firstpage.style.display='none'
+        homepage.style.display='block'
     })
     }
 
@@ -33,6 +37,10 @@ function Loginpage(){
             email:email,
             pwd:pwd,
         }).then((l)=>{
+        const homepage=document.querySelector('.Homepage')
+        const firstpage=document.querySelector('.LoginRegister')
+        firstpage.style.display='none'
+        homepage.style.display='block'
         console.log(l);
     })
 }
@@ -87,6 +95,7 @@ function Loginpage(){
         return (
             
             <div id="bodyClass">
+            <div className='LoginRegister'>
                 <div>
                 <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
                     <Navbar.Brand>Profile_Builder</Navbar.Brand>
@@ -211,6 +220,10 @@ function Loginpage(){
                         </Form.Group>
                     </Form>
                 </div>
+                </div>
+                </div>
+                <div className="Homepage">
+                    <Homepage name={email}></Homepage>
                 </div>
                 </div>
 
