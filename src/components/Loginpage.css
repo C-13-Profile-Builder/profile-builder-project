@@ -1,0 +1,105 @@
+body,.container-fluid{
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    background-image:linear-gradient(rgb(134, 127, 127),black);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+    background-size:100%;
+}
+
+.container{
+    height:100%;
+    margin:auto;
+    width: 30%;
+    margin-top: 50px;
+    background-image:linear-gradient(black,rgb(134, 127, 127));
+    border-width: 1px;
+    opacity:0.85;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.mr-auto{
+    margin:0px;
+    padding:0px;
+}
+#loginNav{
+    color: azure;
+    font-size:large;
+    font-weight:bold;
+    text-decoration: underline ;
+}
+#registerNav{
+    color: azure;
+    font-size: large;
+}
+#registerNav:hover {
+    font-size: large;
+    font-weight:bold ;
+    text-decoration-line: underline;
+
+}
+#loginNav:hover {
+    font-size:large;
+    font-weight:bold ;
+    text-decoration: underline ;
+}
+#RegisterForm{
+    display: none;
+}
+#formlabel{
+    color:antiquewhite;
+    font-weight: bold;
+    font-style: italic;
+}
+Form{
+    padding-top:20px;
+}
+.text-muted{
+    font-size: medium;
+    font-weight: bold;
+}
+Form.check[label]{
+    color:aliceblue;
+}
+#formForgotPassword{
+    color:white;
+}
+#formForgotPassword:hover{
+    color:white;
+    font-weight:bold;
+}
+
+.text-mutedForgotPassword{
+    color:antiquewhite;
+    font-weight: bold;
+    font-size: medium;
+}
+#header_Forgotpassword h1{
+    color:blanchedalmond;
+}
+.text-mutedForgotPasswordlink{
+    color:azure;
+}
+.text-mutedForgotPasswordlink:hover{
+    font-weight: bolder;
+    color:azure;
+
+}
+#FormButton{
+    margin:0px;
+    width:100%;
+}
+#ForgotPasswordForm{
+    display: none;
+}
+#href{
+    color:azure;
+    font-size: medium;
+}
+#href:hover{
+    font-weight: bold;
+    text-decoration: underline;
+}
