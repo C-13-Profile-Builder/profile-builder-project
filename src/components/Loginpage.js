@@ -1,16 +1,20 @@
 import React, { Component,useState } from 'react'
-import {Button,Navbar,Nav,Form} from 'react-bootstrap'
+import {Button,Navbar,Nav,Form,Col} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
-import Homepage from './homepage'
+import Homepage from './Homepage'
+import * as emailjs from 'emailjs-com'
+import {ImProfile} from 'react-icons/im'
 function Loginpage(){
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
     const [dob,setdob]=useState('');
     const [email,setemail]=useState('');
     const [pwd,setpwd]=useState('');
+    const [phno,setphno]=useState('');
     const [confirmpwd,setconfirmpwd]=useState('');
     const[errors,seterror]=useState('')
+    const [sendEmail,setsendEmail]=useState('');
 
    function register(e){
        alert('defght');
@@ -22,6 +26,7 @@ function Loginpage(){
         dob:dob,
         email:email,
         pwd:pwd,
+        phno:phno,
     }).then(()=>{
         const homepage=document.querySelector('.Homepage')
         const firstpage=document.querySelector('.LoginRegister')
@@ -73,7 +78,22 @@ function Loginpage(){
             register.style.textDecoration='none'
         }
     }
-    
+    function forgotpasswordsendemail(e){
+        var forgotpasswordemail={
+            from_name:'mksroct2000@gmail.com',
+            to_name:sendEmail,
+            message:'http://google.com/',
+            subject:'Password change request',
+        }
+        e.preventDefault();
+        console.log(forgotpasswordemail['message']);
+        emailjs.send(
+            'SE_Project_ProfileBuilde',
+            'template_qg7xmi6',
+             forgotpasswordemail,
+            'user_1cNCZo5d7zPQ0cmjl3PEL'
+       )
+    }
     function forgotpassword(){
         const forgotpasswordform=document.getElementById('ForgotPasswordForm');
         const loginform=document.getElementById('LoginForm')
@@ -98,7 +118,7 @@ function Loginpage(){
             <div className='LoginRegister'>
                 <div>
                 <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
-                    <Navbar.Brand>Profile_Builder</Navbar.Brand>
+                    <Navbar.Brand><ImProfile size="2em"/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 </Navbar>
                 </div>
@@ -159,6 +179,19 @@ function Loginpage(){
                             <Form.Label id="formlabel">DOB</Form.Label>
                             <Form.Control type="date" placeholder='dateOfBirth' onChange={(e)=>{setdob(e.target.value)}}/>
                         </Form.Group>
+
+                        <Form.Group controlId="formPlaintextEmail">
+                            <Form.Label id="formlabel" column sm="2">PhNumber</Form.Label>
+                            <Form.Row>
+                                <Col >
+                                    <Form.Control id="formlabel" plaintext readOnly defaultValue="+91" />
+                                </Col>
+                                <Col xs={10}>
+                                    <Form.Control type="text" placeholder='PhNO' onChange={(e)=>{setphno(e.target.value)}}/>
+                                </Col>
+                            </Form.Row>
+                        </Form.Group>
+
                         <Form.Group controlId='formBasicEmail'>
                             <Form.Label id="formlabel">
                                 Email Address
@@ -206,10 +239,10 @@ function Loginpage(){
                             <Form.Label id="formlabel">
                                 Email Address
                             </Form.Label>
-                            <Form.Control type="email" placeholder='mailId'>
+                            <Form.Control type="email" placeholder='mailId' onChange={(e)=>setsendEmail(e.target.value)}>
                             </Form.Control>
                         </Form.Group>
-                        <Button type="submit" variant="primary" id="FormButton">
+                        <Button type="submit" variant="primary" onClick={forgotpasswordsendemail} id="FormButton">
                             Send Link
                         </Button>
                     <br></br>
@@ -221,13 +254,15 @@ function Loginpage(){
                     </Form>
                 </div>
                 </div>
+                
                 </div>
                 <div className="Homepage">
-                    <Homepage name={email}></Homepage>
-                </div>
-                </div>
+                    <Homepage username={email}>
 
-            
+                    </Homepage>
+                </div>
+                
+            </div>
         )
     }
 

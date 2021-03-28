@@ -1,0 +1,105 @@
+.Profile{
+    display: none;
+}
+.Details{
+    margin:auto;
+    margin-top: 40px;
+    width:30%;
+}
+#HomeLink{
+    color:azure;
+}
+#HomeLink:hover{
+    text-decoration: underline;
+    font-weight: bold;
+}
+#basic-nav-dropdown{
+    color:azure;
+}
+#basic-nav-dropdown:hover{
+    
+    font-weight: bold;
+}
+#carousel1{
+    opacity:0.5;
+    
+}
+#carouselPara{
+    color:whitesmoke;
+    font-size: large;
+    
+}
+#carouselHead{
+    font-size: xx-large;
+    background-color: black;
+    width:30%;
+    margin:auto;
+    opacity:0.65;
+    border-radius: 10px;
+}
+#Features{
+    margin:auto;
+    width:90%;
+    background-color: white;
+    border-radius: 5px;
+    padding:30px;
+}
+#featureHeader{
+    color:black;
+    font-weight: bolder;
+}
+#featureHeader span{
+    color:#e3a026;
+    font-weight: bolder;
+    
+}
+#FeaturesRow{
+    margin:auto;
+    width:90%;
+    margin-top: 30px;
+}
+#FeaturesRowCol{
+    margin: 20px;
+    margin-left: 0px;
+    background-color: black;
+    opacity:0.35;
+    border-radius: 8px;
+    padding:10px;
+}
+#FeaturesRowCol h6{
+    color:#e3a026;
+    font-size: large;
+}
+#FeaturesRowCol p{
+    color:whitesmoke;
+    font-size: medium;
+}
+#WhyPB{
+    margin:auto;
+    width:90%;
+    padding:30px;
+}
+#WhyPB p{
+    margin-top: 10px;
+    color:whitesmoke;
+    font-size: large;
+    font-style: italic;
+}
+#footer{
+    margin:auto;
+    width:90%;
+    border: 2px solid white;
+    border-color: white;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+#footer h4{
+    color: white;
+}
+#footer hr{
+    border-top: 1px solid white;
+}
+#footer footer p{
+    color:white;
+
+} 

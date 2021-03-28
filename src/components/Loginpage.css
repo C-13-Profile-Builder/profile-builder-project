@@ -20,7 +20,6 @@ body,.container-fluid{
     border-radius: 10px;
     padding: 20px;
 }
-
 .mr-auto{
     margin:0px;
     padding:0px;
@@ -54,6 +53,7 @@ body,.container-fluid{
     font-weight: bold;
     font-style: italic;
 }
+
 Form{
     padding-top:20px;
 }
@@ -104,5 +104,8 @@ Form.check[label]{
     text-decoration: underline;
 }
 .Homepage{
+    display:none;
+}
+.Profile{
     display:none;
 }

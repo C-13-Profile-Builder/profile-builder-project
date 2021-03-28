@@ -22,25 +22,22 @@ db.connect(function (err) {
     }
  });
 
+ //Registration
 app.post('/api/register',(req,res)=>{
-    console.log("hii")
     const firstname=req.body.firstname;
     const lastname=req.body.lastname;
     const dob=req.body.dob;
     const email=req.body.email;
     const pwd=req.body.pwd;
-    (firstname)
-    // const stmt="INSERT INTO userss (fname,lname,dob,email,pwd) VALUES(?,?,?,?,?)"
-    // db.query(stmt,[firstname,lastname,dob,email,pwd],(err,result=>{
-
-    // }))
-    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd) VALUES (?,?,?,?,?);";
-    db.query(stmt,[firstname,lastname,email,dob,pwd],(errs,result)=>{
+    const phno=req.body.phno;
+    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber) VALUES (?,?,?,?,?,?);";
+    db.query(stmt,[firstname,lastname,email,dob,pwd,phno],(errs,result)=>{
         console.log(errs)
-        //res.send("Hello world")
+        res.send("Hello world")
     })
 
 })
+//Login check
 app.post('/api/login',(req,res)=>{
     const email=req.body.email;
     const pwd=req.body.pwd;
@@ -53,6 +50,31 @@ app.post('/api/login',(req,res)=>{
         }
     })
 })
+
+//get details for profile viewing and editing
+app.post('/api/getDetails',(req,res)=>{
+    const email=req.body.email;
+    const stmt="SELECT * FROM user WHERE email=?;";
+    db.query(stmt,[email],(errs,result)=>{
+        res.send(result)
+        }
+    )
+})
+app.post('/api/update',(req,res)=>{
+    const firstname=req.body.firstname;
+    console.log(firstname)
+    const lastname=req.body.lastname;
+    const email=req.body.email;
+    const phno=req.body.phno;
+    const summary=req.body.summary;
+    const stmt="UPDATE user SET firstname=?,lastname=?,email=?,phonenumber=?,summary=? WHERE email=?;";
+    db.query(stmt,[firstname,lastname,email,phno,summary,email],(errs,result)=>{
+        console.log(result)
+        res.send("Hello world")
+    })
+
+})
+
 
 app.get('/',(req,res)=>{
     res.send("frty")
