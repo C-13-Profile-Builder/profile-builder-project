@@ -7,6 +7,10 @@ import carousel2 from '../images/carousel2.jpg'
 import {FaHome} from 'react-icons/fa'
 import {ImProfile} from 'react-icons/im'
 import {IoReturnUpBackSharp} from 'react-icons/io5'
+import {MdFavorite} from 'react-icons/md'
+import {GiTeacher} from 'react-icons/gi'
+
+import {AiFillProfile} from 'react-icons/ai'
 
 function Homepage(props) {
     
@@ -118,9 +122,12 @@ function Homepage(props) {
                 <div id="WhyPB">
                     <h3 id="featureHeader">Why use <span>ProfileBuilder</span> ?</h3>    
                     <p>
-                        Join over 140,000 teachers, students, educators and professionals from
-                        110 countries that use PortfolioGen to share and showcase
-                        their skills, education, work, achievements and professional growth
+                    Profile Builder gives teachers and students a tool needed to highlight and demonstrate their skills in a modern and unique way. 
+                    This allows Teachers to import your profile from Amrita Faculty Website and Google Scholar and edit it and display it accordingly 
+                    in the Profile Builder. Additionally teachers can add their resumes, paper Works and many more resources into profile builder. 
+                    Students can visit teacher’s profiles and can request them for their guidance. Profile Builder thus makes it easy to create a 
+                    customized portfolio to showcase and share your skills, education, work experience and achievements, while providing an opportunity 
+                    for reflection and continued professional growth and students to be aspired, guided and grow from them.
                     </p>
                 </div>
                 <br></br>
@@ -132,16 +139,23 @@ function Homepage(props) {
                     
                     <Row id="FeaturesRow">
                         <Col sm={12} lg={4} id="FeaturesRowCol">
-                            <center><h6>heading 3</h6></center>
-                            <p>Hello</p>
+                            <center><h5>Consultation</h5></center>
+                            <center><GiTeacher size="3em" color="white"/></center>
+                            <p>Students can visit teacher’s profiles and can request them for their guidance, by mailing them separately or applying for 
+                                consulting through the Profile Builder website</p>
                         </Col>
                         <Col sm={12} lg={3} id="FeaturesRowCol">
-                            <center><h6>heading 3</h6></center>
-                            <p>Hello</p>
+                            <center><h5>Favorite Profile</h5></center>
+                            
+                            <center><MdFavorite size="3em" color="white"/></center>
+                            <p>Favouriting a profile is like private bookmark to make it easier to find them again later. The other user is never notified 
+                                that you have saved them as a favourite.</p>
                         </Col>
                         <Col sm={12} lg={4} id="FeaturesRowCol">
-                            <center><h6>heading 3</h6></center>
-                            <p>Hello</p>
+                            <center><h5>Profile Generation</h5></center>
+                            <center><AiFillProfile size="3em" color="white"/></center>
+                            <p>Faculty members can import their profile from Amrita Faculty Website and Google Scholar. They can edit and display the contents
+                                 accordingly. Additional resources can also be added explicitly by a faculty.</p>
                         </Col>
                     </Row>
                 </div>

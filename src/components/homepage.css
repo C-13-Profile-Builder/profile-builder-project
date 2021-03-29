@@ -8,6 +8,7 @@
 }
 #HomeLink{
     color:azure;
+    
 }
 #HomeLink:hover{
     text-decoration: underline;
@@ -66,9 +67,10 @@
     border-radius: 8px;
     padding:10px;
 }
-#FeaturesRowCol h6{
+#FeaturesRowCol h5{
     color:#e3a026;
     font-size: large;
+    font-weight: bold;
 }
 #FeaturesRowCol p{
     color:whitesmoke;
