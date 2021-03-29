@@ -11,7 +11,7 @@ const db=mysql.createConnection({
     port:3306,
     database:'sedb',
     user:'root',
-    password:'password'
+    password:''
 });
 db.connect(function (err) {
     if(err){
@@ -73,6 +73,16 @@ app.post('/api/update',(req,res)=>{
         res.send("Hello world")
     })
 
+})
+
+app.post('/api/delete',(req,res)=>{
+    const emails=req.body.email;
+    console.log(emails);
+    const stmt="DELETE FROM user WHERE email=?";
+    db.query(stmt,[emails],(errs,result)=>{
+        console.log(result)
+        res.send("Hello world")
+    })
 })
 
 

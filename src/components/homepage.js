@@ -1,6 +1,8 @@
 import React,{useState} from 'react'
 import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row} from 'react-bootstrap'
 import './homepage.css'
+import './Loginpage.css'
+import Loginpage from './Loginpage'
 import Axios from 'axios'
 import carousel1 from '../images/carousel1.jpeg'
 import carousel2 from '../images/carousel2.jpg'
@@ -49,12 +51,38 @@ function Homepage(props) {
             alert("Update Successful")
         })
     }
+
     function GotoHome(){
         const profile=document.querySelector('.Profile')
         const home=document.querySelector('.home')
         profile.style.display='none'
         home.style.display='block'
     }
+    
+    function GotoLogin(){
+        const profile=document.querySelector('.deleteProfilePage')
+        const login=document.querySelector('.LoginRegister')
+        profile.style.display='none'
+        login.style.display='block'
+    }
+
+    function deleteProfile(){
+        const home=document.querySelector('.home')
+        const profile=document.querySelector('.deleteProfilePage')
+        profile.style.display='block'
+        home.style.display='none'
+    }
+
+    function deleteProf(){
+        Axios.post('http://localhost:3001/api/delete',{
+            email:props.username,
+        }).then(()=>{
+            GotoLogin();
+            alert("Delete Successful")
+        })
+    }
+
+
     
     return (
         
@@ -76,6 +104,7 @@ function Homepage(props) {
                             <NavDropdown.Item onClick={profile}>Profile</NavDropdown.Item>
                             <NavDropdown.Item href="#">Settings</NavDropdown.Item>
                             <NavDropdown.Divider />
+                            <NavDropdown.Item onClick={deleteProfile}>Delete</NavDropdown.Item>
                             <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
                         </NavDropdown>  
                     </Navbar.Collapse>
@@ -218,7 +247,13 @@ function Homepage(props) {
                     </Form.Group>
                     <Button type="submit" variant="primary" onClick={update}>Edit</Button>
                 </div>
-            </div>   
+            </div>
+            <div className='deleteProfilePage'>
+              <Form.Group controlId="formPlaintext">
+                        <Form.Label id="formlabel">Click The button to delete account Permanently</Form.Label>
+                    </Form.Group>
+                    <Button type="submit" variant="primary" onClick={deleteProf}>Edit</Button>  
+            </div>
         </div>
     )
 }
