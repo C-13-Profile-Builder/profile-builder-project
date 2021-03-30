@@ -1,8 +1,10 @@
 const express=require('express');
 const app=express();
-const bodyParser=require('body-parser')
+const bodyParser=require('body-parser');
 const mysql=require('mysql');
-const cors=require('cors')
+const request = require("request");// Simplify HTTP requests
+const cheerio = require('cheerio'); // Parse HTML)password
+const cors=require('cors');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json())
 app.use(cors())
@@ -85,6 +87,51 @@ app.post('/api/delete',(req,res)=>{
     })
 })
 
+app.get('/gs/:scholarID', (req, res) => {
+    gsID=req.params.scholarID
+    request.get({
+      uri: 'https://scholar.google.co.uk/citations?user=' +  gsID,//+ "&sortby=pubdate",
+      encoding: "binary"
+    }, function (error, request, body) {
+  
+      let $ = cheerio.load(body);
+      let articles=[];
+      let profile={
+        'prfphoto':$("#gsc_prf_pup-img").attr('src'),
+        'prfname':$("#gsc_prf_in").text(),
+        'prfdesc':$(".gsc_prf_il").eq(0).text(),
+        'prfarea':$(".gsc_prf_inta").toArray().map(element => $(element).text()),
+      };
+      $(".gsc_a_tr").each(function (i, elem) {
+        let inner = $(this);
+        let article={
+              'title':inner.find(".gsc_a_at").text(),
+              'author':inner.find(".gs_gray").eq(0).text(),
+              //'info':inner.find(".gs_gray").eq(1).text(),
+              'cite':Number(inner.find(".gsc_a_c").find(".gs_ibl").text()),
+              'year':Number(inner.find(".gsc_a_y").find(".gs_ibl").text())
+          };
+          articles.push(article);
+      });
+      profile['articles']=articles;
+      const q1="INSERT INTO gsprofile (id,gs_id,prf_name,prf_des,photo_url) VALUES (?,?,?,?,?);";
+      db.query(q1,[10,gsID,profile.prfname,profile.prfdesc,profile.prfphoto],(errs,result)=>{console.log(errs)})
+      
+      profile.prfarea.forEach((elem)=>{
+        const q2="INSERT INTO gswork (id,domain) VALUES (?,?);";
+        db.query(q2,[10,elem],(errs,result)=>{console.log(errs)})
+      });
+
+      articles.forEach((elem)=>{
+        const q3="INSERT INTO gsarticle (id,title,cite,year,authors) VALUES (?,?,?,?,?);";
+        db.query(q3,[10,elem.title,elem.cite,elem.year,elem.author],(errs,result)=>{console.log(err)})
+      });
+//      console.log(profile);
+      res.setHeader('Content-Type', 'application/json');
+      res.statusCode = 200;
+      res.end(JSON.stringify(profile));  
+    });
+});
 
 app.get('/',(req,res)=>{
     res.send("frty")
