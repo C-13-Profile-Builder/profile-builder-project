@@ -43,8 +43,10 @@ function Loginpage(){
             email:email,
             pwd:pwd,
         }).then((l)=>{
+            console.log(l.data)
             const errorDiv=document.querySelector('.errorDiv')
-        if(l=="yes"){
+        if(l.data=="Yes"){
+            console.log(l.data)
         const homepage=document.querySelector('.Homepage')
         const firstpage=document.querySelector('.LoginRegister')
         firstpage.style.display='none'
