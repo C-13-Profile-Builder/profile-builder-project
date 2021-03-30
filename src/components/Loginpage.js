@@ -5,6 +5,7 @@ import Axios from 'axios'
 import Homepage from './Homepage'
 import * as emailjs from 'emailjs-com'
 import {ImProfile} from 'react-icons/im'
+import {FaExclamation} from 'react-icons/fa'
 function Loginpage(){
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
@@ -42,11 +43,17 @@ function Loginpage(){
             email:email,
             pwd:pwd,
         }).then((l)=>{
+            const errorDiv=document.querySelector('.errorDiv')
+        if(l=="yes"){
         const homepage=document.querySelector('.Homepage')
         const firstpage=document.querySelector('.LoginRegister')
         firstpage.style.display='none'
         homepage.style.display='block'
-        console.log(l);
+        errorDiv.style.display='none'
+        console.log(l);}
+        else{
+            errorDiv.style.display='block';
+        }
     })
 }
 
@@ -56,6 +63,8 @@ function Loginpage(){
         const registerform=document.getElementById('RegisterForm')
         const login=document.getElementById('loginNav')
         const register=document.getElementById('registerNav')
+        const errorDiv=document.querySelector('.errorDiv')
+        
         if(type=="register"){
             loginform.style.display='none'
             registerform.style.display='block'
@@ -64,6 +73,7 @@ function Loginpage(){
             register.style.textDecoration='underline'
             login.style.fontWeight='normal'
             login.style.textDecoration='none'
+            errorDiv.style.display='none';
     
         }
         else if(type=="login"){
@@ -82,7 +92,7 @@ function Loginpage(){
         var forgotpasswordemail={
             from_name:'mksroct2000@gmail.com',
             to_name:sendEmail,
-            message:'http://google.com/',
+            message:<button>Hello</button>,
             subject:'Password change request',
         }
         e.preventDefault();
@@ -97,6 +107,8 @@ function Loginpage(){
     function forgotpassword(){
         const forgotpasswordform=document.getElementById('ForgotPasswordForm');
         const loginform=document.getElementById('LoginForm')
+        const errorDiv=document.querySelector('.errorDiv')
+        errorDiv.style.display='none';
         forgotpasswordform.style.display='block'
         loginform.style.display='none'
         const formnav=document.getElementById('formnav')
@@ -111,9 +123,7 @@ function Loginpage(){
         formnav.style.display='block'
     }
     
-
-        return (
-            
+        return (        
             <div id="bodyClass">
             <div className='LoginRegister'>
                 <div>
@@ -132,7 +142,10 @@ function Loginpage(){
                         </Nav>
                     </Navbar.Collapse>
                     </Navbar>
-                    
+                    <div className="errorDiv">
+                        <br></br>
+                       <center><p><FaExclamation size="2em" id="errorDivIcon"/> Credentials Provided are Incorrect</p></center>
+                    </div>
                     <Form id="LoginForm" onSubmit={Login}>
                         <Form.Group controlId='formBasicEmail'>
                             <Form.Label id="formlabel">
@@ -162,8 +175,6 @@ function Loginpage(){
                         </Button>
                     </Form>
                     
-                    
-
                     <Form id="RegisterForm" onSubmit={register}>
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Label id="formlabel">First Name</Form.Label>

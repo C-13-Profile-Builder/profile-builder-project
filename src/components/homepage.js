@@ -11,11 +11,10 @@ import {ImProfile} from 'react-icons/im'
 import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
-
 import {AiFillProfile} from 'react-icons/ai'
 
+
 function Homepage(props) {
-    
     const [fname,setfname]=useState('')
     const [lname,setlastname]=useState('');
     const [dob,setdob]=useState('');
@@ -82,8 +81,6 @@ function Homepage(props) {
         })
     }
 
-
-    
     return (
         
         <div>
@@ -120,7 +117,7 @@ function Homepage(props) {
                         id="carousel1"
                         />
                         <Carousel.Caption>
-                        <h3 id="carouselHead">First slide label</h3>
+                        <h3 id="carouselHead">"The best way to predict the future is to create it"</h3>
                         <br></br>
                         <br></br>
                         <p id="carouselPara">
@@ -249,10 +246,12 @@ function Homepage(props) {
                 </div>
             </div>
             <div className='deleteProfilePage'>
-              <Form.Group controlId="formPlaintext">
-                        <Form.Label id="formlabel">Click The button to delete account Permanently</Form.Label>
-                    </Form.Group>
-                    <Button type="submit" variant="primary" onClick={deleteProf}>Edit</Button>  
+                <Form.Group controlId="formPlaintext">
+                    <Form.Label id="formlabel">Click The button to delete account Permanently</Form.Label>
+                </Form.Group>
+                <Button type="submit" variant="primary" onClick={deleteProf}>
+                    Edit
+                </Button>
             </div>
         </div>
     )

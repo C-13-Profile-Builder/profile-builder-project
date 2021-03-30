@@ -11,7 +11,7 @@ const db=mysql.createConnection({
     port:3306,
     database:'sedb',
     user:'root',
-    password:''
+    password:'password'
 });
 db.connect(function (err) {
     if(err){

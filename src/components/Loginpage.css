@@ -109,3 +109,24 @@ Form.check[label]{
 .Profile{
     display:none;
 }
+.errorDiv{
+    display: none; 
+    width:90%;
+    margin:auto;
+} 
+
+.errorDiv p{
+    color:azure;
+    font-size: large;
+}
+@keyframes example {
+    from {color: red;}
+    to {color: rgb(245, 86, 86);}
+  }
+
+  #errorDivIcon {
+    animation-name: example;
+    animation-duration: 2s;
+    color:red;
+    animation-iteration-count: infinite;
+  }
