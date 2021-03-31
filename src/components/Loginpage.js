@@ -1,5 +1,5 @@
 import React, { Component,useState } from 'react'
-import {Button,Navbar,Nav,Form,Col} from 'react-bootstrap'
+import {Button,Navbar,Nav,Form,Col,Row} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
 import Homepage from './Homepage'
@@ -14,12 +14,17 @@ function Loginpage(){
     const [pwd,setpwd]=useState('');
     const [phno,setphno]=useState('');
     const [confirmpwd,setconfirmpwd]=useState('');
+    const [GSurl,seturl]=useState('');
+    
     const[errors,seterror]=useState('')
     const [sendEmail,setsendEmail]=useState('');
-
+    var Studentcheck=false;
+    var Facultycheck=false;
    function register(e){
        alert('defght');
        console.log("Hii")
+       const urlParams = new URLSearchParams(GSurl);
+       console.log(urlParams.get('user'))
     e.preventDefault();
         Axios.post('http://localhost:3001/api/register',
         {firstname:firstname,
@@ -28,12 +33,27 @@ function Loginpage(){
         email:email,
         pwd:pwd,
         phno:phno,
+        userType:Studentcheck?'N':'Y',
+        GS_ID:urlParams.get('user'),
     }).then(()=>{
         const homepage=document.querySelector('.Homepage')
         const firstpage=document.querySelector('.LoginRegister')
         firstpage.style.display='none'
         homepage.style.display='block'
+        //
+        Axios.post('http://localhost:3001/api/getDetails',{
+        email:email
+        }).then((result)=>{
+            console.log(result,result.data['0']['id'])
+        Axios.post('http://localhost:3001/gs/generate',
+        {
+        GS_ID:urlParams.get('user'),
+        userid:result.data['0']['id'],
+        })
     })
+    })
+    
+    
     }
 
     function Login(e){
@@ -90,6 +110,23 @@ function Loginpage(){
             register.style.textDecoration='none'
         }
     }
+
+    function Student_or_Faculty(type){
+        const gsurl=document.getElementById("GsURL");
+        if(type==='student'){
+            Studentcheck=true;
+            Facultycheck=false;
+            gsurl.style.display='none'
+        }
+        else{
+            Facultycheck=true;
+            Studentcheck=false;
+            gsurl.style.display='block'
+        }
+        console.log(Studentcheck,Facultycheck)
+
+    }
+
     function forgotpasswordsendemail(e){
         var forgotpasswordemail={
             from_name:'mksroct2000@gmail.com',
@@ -203,6 +240,39 @@ function Loginpage(){
                                     <Form.Control type="text" placeholder='PhNO' onChange={(e)=>{setphno(e.target.value)}}/>
                                 </Col>
                             </Form.Row>
+                        </Form.Group>
+
+                        <Form.Group controlId="formPlaintextEmail">
+                            <Form.Label id="formlabel">Are you a Student or Faculty?</Form.Label>
+                            <br></br>
+                            <Row xs={6}>
+                                <Col xs={6}>
+                                    <Form.Check inline
+                                        type="radio"
+                                        label="Faculty"
+                                        name="formHorizontalRadios"
+                                        id="formHorizontalRadios1"
+                                        onChange={()=>Student_or_Faculty("faculty")}
+                                    />
+                            </Col>
+                                <Col xs={6}>
+                                    <Form.Check inline
+                                        type="radio"
+                                        label="Student"
+                                        name="formHorizontalRadios"
+                                        id="formHorizontalRadios2"
+                                        onChange={()=>Student_or_Faculty("student")}
+                                    />
+                                </Col>
+                            </Row>
+                        </Form.Group>
+
+                        <Form.Group id="GsURL">
+                            <Form.Label id="formlabel">
+                                Google Scholar URL
+                            </Form.Label>
+                            <Form.Control type="text" placeholder='url' onChange={(e)=>{seturl(e.target.value)}}>
+                            </Form.Control>
                         </Form.Group>
 
                         <Form.Group controlId='formBasicEmail'>

@@ -32,8 +32,10 @@ app.post('/api/register',(req,res)=>{
     const email=req.body.email;
     const pwd=req.body.pwd;
     const phno=req.body.phno;
-    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber) VALUES (?,?,?,?,?,?);";
-    db.query(stmt,[firstname,lastname,email,dob,pwd,phno],(errs,result)=>{
+    const userType=req.body.userType;
+    const GS_ID=req.body.GS_ID;
+    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber,Faculty,GS_ID) VALUES (?,?,?,?,?,?,?,?);";
+    db.query(stmt,[firstname,lastname,email,dob,pwd,phno,userType,GS_ID],(errs,result)=>{
         console.log(errs)
         res.send("Hello world")
     })
@@ -87,8 +89,10 @@ app.post('/api/delete',(req,res)=>{
     })
 })
 
-app.get('/gs/:scholarID', (req, res) => {
-    gsID=req.params.scholarID
+app.post('/gs/generate', (req, res) => {
+    const gsID=String(req.body.GS_ID);
+    const userid=Number(req.body.userid);
+    console.log(gsID)
     request.get({
       uri: 'https://scholar.google.co.uk/citations?user=' +  gsID,//+ "&sortby=pubdate",
       encoding: "binary"
@@ -115,16 +119,16 @@ app.get('/gs/:scholarID', (req, res) => {
       });
       profile['articles']=articles;
       const q1="INSERT INTO gsprofile (id,gs_id,prf_name,prf_des,photo_url) VALUES (?,?,?,?,?);";
-      db.query(q1,[10,gsID,profile.prfname,profile.prfdesc,profile.prfphoto],(errs,result)=>{console.log(errs)})
+      db.query(q1,[userid,gsID,profile.prfname,profile.prfdesc,profile.prfphoto],(errs,result)=>{console.log(errs)})
       
       profile.prfarea.forEach((elem)=>{
         const q2="INSERT INTO gswork (id,domain) VALUES (?,?);";
-        db.query(q2,[10,elem],(errs,result)=>{console.log(errs)})
+        db.query(q2,[userid,elem],(errs,result)=>{console.log(errs)})
       });
 
       articles.forEach((elem)=>{
         const q3="INSERT INTO gsarticle (id,title,cite,year,authors) VALUES (?,?,?,?,?);";
-        db.query(q3,[10,elem.title,elem.cite,elem.year,elem.author],(errs,result)=>{console.log(err)})
+        db.query(q3,[userid,elem.title,elem.cite,elem.year,elem.author],(errs,result)=>{console.log(errs)})
       });
 //      console.log(profile);
       res.setHeader('Content-Type', 'application/json');

@@ -130,3 +130,9 @@ Form.check[label]{
     color:red;
     animation-iteration-count: infinite;
 }
+#GsURL{
+    display:none;
+}
+.form-check-label{
+    color:azure;
+}
