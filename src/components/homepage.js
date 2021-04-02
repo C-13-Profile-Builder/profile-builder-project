@@ -12,16 +12,22 @@ import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
 import {AiFillProfile} from 'react-icons/ai'
+import { HandIndex } from 'react-bootstrap-icons'
 
 
 function Homepage(props) {
-    const [fname,setfname]=useState('')
+    const [profilegenerate,setProfileGenerate]=useState('');
+    const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
     const [dob,setdob]=useState('');
     const [email,setemail]=useState('');
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
     const username=" "+props.username;
+    var [FacultyProfileData,setFacultyProfileData]=useState([])
+    const [IndividualProfile,setIndividualProfile]=useState([])
+    var [domains,setdomain]=useState([])
+    var [articles,setarticles]=useState([])
     function profile(){
         const profile=document.querySelector('.Profile')
         const home=document.querySelector('.home')
@@ -54,13 +60,21 @@ function Homepage(props) {
     function GotoHome(){
         const profile=document.querySelector('.Profile')
         const home=document.querySelector('.home')
+        const IndividualFacultyProfile=document.querySelector('.IndividualFacultyProfile')
+        const Generation=document.querySelector('.Generation')
         profile.style.display='none'
         home.style.display='block'
+        IndividualFacultyProfile.style.display='none'
+        Generation.style.display='none'
     }
     
     function GotoLogin(){
         const profile=document.querySelector('.deleteProfilePage')
         const login=document.querySelector('.LoginRegister')
+        const home=document.querySelector('.home')
+        const Generation=document.querySelector('.Generation')
+        Generation.style.display='none'
+        home.style.display='none'
         profile.style.display='none'
         login.style.display='block'
     }
@@ -80,7 +94,42 @@ function Homepage(props) {
             alert("Delete Successful")
         })
     }
-
+    
+    function ProfileGenerate(from){
+        if(profilegenerate!=''){
+            Axios.post('http://localhost:3001/api/generate',{
+              subject: profilegenerate
+            }).then((result)=>{
+                console.log(result.data)
+                console.log(result)
+                setFacultyProfileData(result.data)
+                console.log(FacultyProfileData)
+                FacultyProfileData.map((p)=>{
+                    console.log(p)
+                })
+            })
+            const Generation=document.querySelector('.Generation')
+            const fromclass=document.querySelector('.'+from)
+            Generation.style.display='block'
+            fromclass.style.display='none'
+        }
+    }
+    function ViewCompleteArticle(gsid){
+        const generation=document.querySelector('.Generation')
+        const IndividualFacultyProfile=document.querySelector('.IndividualFacultyProfile')
+        generation.style.display='none'
+        IndividualFacultyProfile.style.display='block'
+        console.log(gsid)
+        Axios.post("http://localhost:3001/api/generateallarticleOfAFaculty",{
+            gsid:gsid
+        }).then((res)=>{
+            setIndividualProfile(res.data['1'])
+            setdomain(res.data['0'])
+            console.log(domains)
+            setarticles(res.data['2'])
+            console.log(articles)
+        })
+    }
     return (
         
         <div>
@@ -90,19 +139,17 @@ function Homepage(props) {
                     <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse>
-        
-                            <Form.Control type="text" placeholder="Search" className="mr-sm-2"/>
-                            <Button variant="outline-success">Search</Button>
-                    
+                        <Form.Control type="text" placeholder="Search" className="mr-sm-2" onChange={(e)=>setProfileGenerate(e.target.value)}/>
+                        <Button variant="outline-success"  onClick={()=>ProfileGenerate("home")}>Search</Button>
                     </Navbar.Collapse>
                     <Navbar.Collapse className="justify-content-end">
                         <Nav.Link href="#link" id="HomeLink"><FaHome size='1.5em'/> HOME</Nav.Link>
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
-                            <NavDropdown.Item onClick={profile}>Profile</NavDropdown.Item>
+                            <NavDropdown.Item onClick={profile} to="/Profile">Profile</NavDropdown.Item>
                             <NavDropdown.Item href="#">Settings</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item onClick={deleteProfile}>Delete</NavDropdown.Item>
-                            <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                            <NavDropdown.Item onClick={GotoLogin} path="/login">Sign Out</NavDropdown.Item>
                         </NavDropdown>  
                     </Navbar.Collapse>
                 </Navbar>
@@ -253,6 +300,130 @@ function Homepage(props) {
                     Edit
                 </Button>
             </div>
+
+            <div className='Generation'>
+                <div>
+                    <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
+                        <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                        <Navbar.Collapse className="justify-content-end">
+                        <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link onClick={GotoHome} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
+                            <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
+                                <NavDropdown.Item href="#">Profile</NavDropdown.Item>
+                                <NavDropdown.Item href="#">Settings</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                            </NavDropdown>  
+                        </Navbar.Collapse>
+                    </Navbar>
+                </div>
+                <div className='FacultyDetails'>
+                    <center><h2>{profilegenerate}</h2></center>
+                    <br></br>
+                    <div className="ListOfFaculties">
+                        {FacultyProfileData.map((index) => (
+                            <Row id="ListOfFacultiesRow">
+                                <Col md={4}>
+                                   <center> <img src={index.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg"/></center>
+                                   <br></br>
+                                </Col>
+                                <Col md={7}>
+                                    <Row>
+                                    <p id="ListOfFacultiesPara">Name: <span>{index.prf_name}</span></p>
+                                    </Row>
+                                    <Row>
+                                    <p id="ListOfFacultiesPara">Place of work: <span>{index.prf_des}</span></p>
+                                    </Row>
+                                    <Row>
+                                    <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
+                                    </Row>
+                                    <Row>
+                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id)}>View Articles</a></span></p>
+                                    </Row>
+                                </Col>
+                            </Row>
+                            
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="IndividualFacultyProfile">
+                <div>
+                    <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
+                        <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                        <Navbar.Collapse className="justify-content-end">
+                        <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link onClick={GotoHome} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
+                            <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
+                                <NavDropdown.Item href="#">Profile</NavDropdown.Item>
+                                <NavDropdown.Item href="#">Settings</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                            </NavDropdown>  
+                        </Navbar.Collapse>
+                    </Navbar>
+                </div>
+                <div className='FacultyDetails'>
+                        <div className="ListOfFaculties">
+                        <div id="subjects">
+                            {IndividualProfile.map((index) => (
+                                <div id="ListOfFacultiesRow">
+                                <Row >
+                                    <Col md={4}>
+                                    <center> <img src={index.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg"/></center>
+                                    <br></br>
+                                    </Col>
+                                    <Col md={7}>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">Name: <span>{index.prf_name}</span></p>
+                                        </Row>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">Place of work: <span>{index.prf_des}</span></p>
+                                        </Row>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                                <Row id="subjectRow">
+                                {domains.map((index) => (
+                                    <Col>
+                                       <center> <p id="ListOfFacultiesPara">{index.domain}</p></center>
+                                    </Col>
+                                ))}
+                            </Row>
+                            <br></br>
+                                </div>
+                                
+                            ))}
+                            
+                            </div> 
+                        </div>
+                        <br></br>
+                        <br></br>
+                </div>
+
+                <div className="articles">
+                <div>
+                    {articles.map((index) => (
+                        
+                        <div id="articleRow">
+                            <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
+                            <Row xs={6}>      
+                              <Col><p id="ListOfFacultiesPara">Cite: <span>{index.cite}</span></p></Col>                     
+                              <Col><p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p></Col>
+                            </Row>  
+                            <p id="ListOfFacultiesPara">Authors: <span>{index.authors}</span></p>
+                            
+                        </div>
+                            ))}
+                        </div>
+                </div>
+            </div>
+
         </div>
     )
 }

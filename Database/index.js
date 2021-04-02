@@ -64,6 +64,7 @@ app.post('/api/getDetails',(req,res)=>{
         }
     )
 })
+//update user details
 app.post('/api/update',(req,res)=>{
     const firstname=req.body.firstname;
     console.log(firstname)
@@ -78,7 +79,7 @@ app.post('/api/update',(req,res)=>{
     })
 
 })
-
+//delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;
     console.log(emails);
@@ -86,6 +87,35 @@ app.post('/api/delete',(req,res)=>{
     db.query(stmt,[emails],(errs,result)=>{
         console.log(result)
         res.send("Hello world")
+    })
+})
+//generate details in webpage
+app.post('/api/generate',(req,res)=>{
+    const subject=req.body.subject;
+    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gswork,gsprofile where domain=? and gswork.id=gsprofile.id"
+    db.query(stmt,[subject],(err,result)=>{
+        // console.log(result)
+        res.send(result)
+    })
+})
+//generate all details of a faculty
+app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
+    const id=req.body.gsid;
+    const stmt="SELECT gswork.domain FROM gswork,user where user.GS_ID=? and gswork.id=user.id";
+    const stmtone="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gsprofile where gsprofile.gs_id=?";
+    const stmttwo="SELECT gsarticle.title,gsarticle.cite,gsarticle.year,gsarticle.authors from gsarticle,user where user.GS_ID=? and user.id=gsarticle.id"
+    db.query(stmt,[id],(err,result)=>{
+        console.log(result)
+        db.query(stmtone,[id],(err1,results)=>{
+            console.log(results)
+            db.query(stmttwo,[id],(err2,resultss)=>{
+                console.log(resultss)
+                
+                arr=[result,results,resultss]
+                console.log(arr[0])
+                res.send([result,results,resultss])
+            })
+        })
     })
 })
 

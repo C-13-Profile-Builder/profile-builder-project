@@ -113,3 +113,63 @@
 .deleteProfilePage{
     display: none;
 }
+.Generation{
+    display:none;
+}
+.ListOfFaculties{
+    width:60%;
+    margin:auto;
+    margin-top: 30px;
+    
+}
+#ListOfFacultiesPara{
+    color:black;
+    font-weight: bold;
+    font-size: medium;
+}
+#ListOfFacultiesPara span{
+    color:black;
+    font-weight: bolder;
+    font-size:medium;
+    text-decoration:none;
+}
+
+#ListOfFacultiesRow{
+    padding:20px;
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    /*  */
+}
+#ListOfFacultiesPara span a{
+    color:blue;
+}
+.FacultyDetails h2{
+width:40%;
+background-color: white;
+border-radius: 5px;
+}
+.IndividualFacultyProfile{
+    display: none;
+}
+#subjects{
+    width:90%;
+    margin: auto;
+    
+}
+#subjectRow{
+    text-decoration: underline;
+}
+.articles{
+    width:80%;
+    margin:auto;
+    
+}
+#articleRow{
+    width:90%;
+    margin:auto;
+    background-color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+}

@@ -22,8 +22,9 @@ function Loginpage(){
     var Facultycheck=false;
    function register(e){
        alert('defght');
-       console.log("Hii")
+       console.log(GSurl)
        const urlParams = new URLSearchParams(GSurl);
+       console.log(GSurl)
        console.log(urlParams.get('user'))
     e.preventDefault();
         Axios.post('http://localhost:3001/api/register',
@@ -214,7 +215,7 @@ function Loginpage(){
                         </Button>
                     </Form>
                     
-                    <Form id="RegisterForm" onSubmit={register}>
+                    <Form id="RegisterForm" onSubmit={register} action="/Home">
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Label id="formlabel">First Name</Form.Label>
                             <Form.Control type="text" placeholder='firstname' onChange={(e)=>{
@@ -296,7 +297,7 @@ function Loginpage(){
                         </Form.Group>
                         <Form.Group controlId='formBasicPassword'>
                             <Form.Label id="formlabel">
-                                Conifrm Password
+                                Confirm Password
                             </Form.Label>
                             <Form.Control type="password" placeholder='Confirm_password' onChange={(e)=>{setconfirmpwd(e.target.value)}}>
                             </Form.Control>
