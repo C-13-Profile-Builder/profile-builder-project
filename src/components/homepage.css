@@ -173,3 +173,10 @@ border-radius: 5px;
     margin-bottom: 20px;
     padding: 20px;
 }
+#IndividualFacultyProfileButton{
+    margin: auto;
+    width:90%;
+}
+.displayFavorites{
+    display:none;
+}

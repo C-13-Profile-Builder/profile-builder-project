@@ -58,11 +58,39 @@ app.post('/api/login',(req,res)=>{
 //get details for profile viewing and editing
 app.post('/api/getDetails',(req,res)=>{
     const email=req.body.email;
+    console.log(email)
     const stmt="SELECT * FROM user WHERE email=?;";
     db.query(stmt,[email],(errs,result)=>{
         res.send(result)
         }
     )
+})
+//Insert Into Favorites Table
+app.post('/api/insertFavorites',(req,res)=>{
+    const id=req.body.id;
+    const gsid=req.body.gsid;
+    const stmt1="Select * from favorites where GS_ID=? and id=?;";
+    db.query(stmt1,[gsid,id],(errs,result)=>{
+    if(result.length>0){
+        res.send("Hello world")
+    }
+    else{
+        const stmt="INSERT INTO favorites (id,GS_ID) VALUES (?,?);";
+        db.query(stmt,[id,gsid],(errs,result)=>{
+            console.log(errs)
+            res.send("Hello world")
+        })
+    }
+    })
+    
+})
+//get Favorited profile's gs_id
+app.post('/api/favorites',(req,res)=>{
+    const userid=req.body.id;
+    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM favorites,gsprofile where favorites.id=? and favorites.GS_ID=gsprofile.gs_id"
+    db.query(stmt,[userid],(err,result)=>{
+        res.send(result)
+    })
 })
 //update user details
 app.post('/api/update',(req,res)=>{
