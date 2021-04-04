@@ -72,13 +72,13 @@ app.post('/api/insertFavorites',(req,res)=>{
     const stmt1="Select * from favorites where GS_ID=? and id=?;";
     db.query(stmt1,[gsid,id],(errs,result)=>{
     if(result.length>0){
-        res.send("Hello world")
+        res.send("Yes")
     }
     else{
         const stmt="INSERT INTO favorites (id,GS_ID) VALUES (?,?);";
         db.query(stmt,[id,gsid],(errs,result)=>{
             console.log(errs)
-            res.send("Hello world")
+            res.send("No")
         })
     }
     })

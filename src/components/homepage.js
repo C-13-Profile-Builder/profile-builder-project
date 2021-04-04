@@ -14,7 +14,7 @@ import {GiTeacher} from 'react-icons/gi'
 import {AiFillProfile,AiOutlineStar} from 'react-icons/ai'
 import { HandIndex } from 'react-bootstrap-icons'
 
-
+var historyArray=[];
 function Homepage(props) {
     const [profilegenerate,setProfileGenerate]=useState('');
     const [fname,setfname]=useState('');
@@ -24,6 +24,7 @@ function Homepage(props) {
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
     const username=" "+props.username;
+    
     var [FacultyProfileData,setFacultyProfileData]=useState([])
     const [IndividualProfile,setIndividualProfile]=useState([])
     var [domains,setdomain]=useState([])
@@ -34,7 +35,7 @@ function Homepage(props) {
         const profile=document.querySelector('.Profile')
         name.style.display='none'
         profile.style.display='block'
-        
+        historyArray.push(NameClass)
         Axios.post('http://localhost:3001/api/getDetails',{
             email:props.username
         }).then((det)=>{
@@ -64,7 +65,9 @@ function Homepage(props) {
         const home=document.querySelector('.home')
         name.style.display='none'
         home.style.display='block'
-        
+        while(historyArray.length){
+            historyArray.pop();
+        }
     }
     
     function GotoLogin(){
@@ -95,6 +98,7 @@ function Homepage(props) {
     }
     
     function ProfileGenerate(from){
+        historyArray.push(from)
         if(profilegenerate!=''){
             Axios.post('http://localhost:3001/api/generate',{
               subject: profilegenerate
@@ -113,13 +117,12 @@ function Homepage(props) {
             fromclass.style.display='none'
         }
     }
-    function ViewCompleteArticle(gsid){
-        const generation=document.querySelector('.Generation')
+    function ViewCompleteArticle(gsid,NameClass){
         const IndividualFacultyProfile=document.querySelector('.IndividualFacultyProfile')
-        const displayFavorites=document.querySelector('.displayFavorites')
-        displayFavorites.style.display='none'
-        generation.style.display='none'
+        const nc=document.querySelector('.'+NameClass)
+        nc.style.display='none'
         IndividualFacultyProfile.style.display='block'
+        historyArray.push(NameClass)
         console.log(gsid)
         Axios.post("http://localhost:3001/api/generateallarticleOfAFaculty",{
             gsid:gsid
@@ -139,12 +142,20 @@ function Homepage(props) {
             Axios.post("http://localhost:3001/api/insertFavorites",{
                 id:result.data['0']['id'],
                 gsid:gs_id,
+            }).then((res)=>{
+                console.log(res.data)
+                if(res.data=="Yes")
+                {
+                    var popup = document.getElementById("myPopup");
+                    popup.classList.toggle("show");
+                }
             })
             
         })
     }
     function DisplayFavorites(NameClass){
         console.log(NameClass)
+        historyArray.push(NameClass)
         const favorite=document.querySelector('.displayFavorites')
         const name=document.querySelector('.'+NameClass)
         favorite.style.display='block'
@@ -160,6 +171,17 @@ function Homepage(props) {
                 console.log(FavoriteFacultyProfile)
             })
         })
+    }
+    function goBack(c_page){
+        if(historyArray.length>0){
+        const nc=historyArray.pop()
+        console.log(nc,historyArray)
+        const cpage=document.querySelector('.'+c_page)
+        const namec=document.querySelector('.'+nc)
+        cpage.style.display='none'
+        namec.style.display='block'
+        }
+
     }
     return (
         
@@ -201,7 +223,7 @@ function Homepage(props) {
                         <p id="carouselPara">
                             Join over 140,000 teachers, students, educators and professionals from
                             110 countries that use PortfolioGen to share and showcase
-                            their skills, education, work, achievements and professional growth
+                            their skills, education, work, achievements and professional growth.
                         </p>
                         </Carousel.Caption>
                     </Carousel.Item>      
@@ -214,10 +236,12 @@ function Homepage(props) {
                         id="carousel1"
                         />
                         <Carousel.Caption>
-                        <h3 id="carouselHead">First slide label</h3>
+                        <h3 id="carouselHead">"The best way to predict the future is to create it"</h3>
                         <br></br>
                         <br></br>
-                        <p id="carouselPara">Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                        <p id="carouselPara">Join over 140,000 teachers, students, educators and professionals from
+                            110 countries that use PortfolioGen to share and showcase
+                            their skills, education, work, achievements and professional growth.</p>
                         </Carousel.Caption>
                     </Carousel.Item>    
                 </Carousel>
@@ -281,7 +305,7 @@ function Homepage(props) {
                     <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse className="justify-content-end">
-                    <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                    <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("Profile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                     <Nav.Link onClick={()=>GotoHome("Profile")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                             <NavDropdown.Item onClick={()=>DisplayFavorites("Profile")}>Favorites</NavDropdown.Item>
@@ -337,7 +361,7 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("Generation")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("Generation")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("Generation")}>Profile</NavDropdown.Item>
@@ -369,7 +393,7 @@ function Homepage(props) {
                                     <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
                                     </Row>
                                     <Row>
-                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id)}>View Articles</a></span></p>
+                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'Generation')}>View Articles</a></span></p>
                                     </Row>
                                 </Col>
                             </Row>
@@ -385,7 +409,7 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("IndividualFacultyProfile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("IndividualFacultyProfile")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("IndividualFacultyProfile")}>Profile</NavDropdown.Item>
@@ -402,7 +426,7 @@ function Homepage(props) {
                             {IndividualProfile.map((index) => (
                                 <div id="ListOfFacultiesRow">
                                 <Row className="justify-content-end" id="IndividualFacultyProfileButton">
-                                    <Button variant="outline-dark" onClick={()=>AddToFavorites(index.gs_id)}><AiOutlineStar/> Favorites</Button>
+                                    <Button variant="outline-dark" onClick={()=>AddToFavorites(index.gs_id)} id="popup"><AiOutlineStar/> Favorites<span className="popuptext" id="myPopup">Already In Favorites!</span></Button>
                                 </Row>
                                 <Row >
                                     <Col md={4}>
@@ -463,7 +487,7 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink"><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("displayFavorites")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("displayFavorites")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("displayFavorites")}>Profile</NavDropdown.Item>
@@ -494,7 +518,7 @@ function Homepage(props) {
                                     <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
                                     </Row>
                                     <Row>
-                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id)}>View Articles</a></span></p>
+                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'displayFavorites')}>View Articles</a></span></p>
                                     </Row>
                                 </Col>
                             </Row>
