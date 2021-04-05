@@ -6,6 +6,8 @@ import Homepage from './Homepage'
 import * as emailjs from 'emailjs-com'
 import {ImProfile} from 'react-icons/im'
 import {FaExclamation} from 'react-icons/fa'
+var Errorstag=[]
+
 function Loginpage(){
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
@@ -16,17 +18,39 @@ function Loginpage(){
     const [confirmpwd,setconfirmpwd]=useState('');
     const [GSurl,seturl]=useState('');
     
-    const[errors,seterror]=useState('')
+    const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
     var Studentcheck=false;
     var Facultycheck=false;
    function register(e){
-       alert('defght');
        console.log(GSurl)
        const urlParams = new URLSearchParams(GSurl);
        console.log(GSurl)
        console.log(urlParams.get('user'))
-    e.preventDefault();
+    Errorstag=[]
+      e.preventDefault()
+      if(firstname===''){
+          Errorstag.push("FirstName field is Empty")
+      }
+    if(dob===''){
+        Errorstag.push("DOB field is Empty")
+    }
+    if(phno===''){
+        Errorstag.push("Phone Number field is Empty")
+    }
+    if(!Studentcheck && !Facultycheck)
+    {
+        Errorstag.push("UserType field is Empty")   
+    }
+    if((Studentcheck?'N':'Y')==='Y' && GSurl==='')
+    {
+        Errorstag.push("Faculty GS-ID field is Empty")   
+    }
+    seterror(Errorstag);
+    const errorDiv=document.querySelector('.errorDiv')
+    if(Errorstag.length==0)
+    {
+        
         Axios.post('http://localhost:3001/api/register',
         {firstname:firstname,
         lastname:lastname,
@@ -41,6 +65,7 @@ function Loginpage(){
         const firstpage=document.querySelector('.LoginRegister')
         firstpage.style.display='none'
         homepage.style.display='block'
+        errorDiv.style.display='none'
         //
         Axios.post('http://localhost:3001/api/getDetails',{
         email:email
@@ -53,12 +78,26 @@ function Loginpage(){
         })
     })
     })
-    
-    
+   }
+   else{
+    Errorstag.map((value,index,array)=>(
+        console.log(index)
+    ))
+    console.log("in else")
+    errorDiv.style.display='block'
+    const errorDivLogin=document.querySelector('.errorDivLogin')
+    errorDivLogin.style.display='none'
+    const errorDivRegister=document.querySelector('.errorDivRegister')
+    errorDivRegister.style.display='block'
+    console.log(Errorstag)
+
+   }
+
     }
+    
 
     function Login(e){
-        alert(email);
+        // alert(email);
         e.preventDefault();
         Axios.post('http://localhost:3001/api/login',{
             email:email,
@@ -66,6 +105,8 @@ function Loginpage(){
         }).then((l)=>{
             console.log(l.data)
             const errorDiv=document.querySelector('.errorDiv')
+            const errorDivLogin=document.querySelector('.errorDivLogin')
+            const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
             console.log(l.data)
         const homepage=document.querySelector('.Homepage')
@@ -76,12 +117,13 @@ function Loginpage(){
         console.log(l);}
         else{
             errorDiv.style.display='block';
+            errorDivRegister.style.display='none'
+            errorDivLogin.style.display='block'
         }
     })
 }
 
     function display(type){
-        console.log("hi")
         const loginform=document.getElementById('LoginForm')
         const registerform=document.getElementById('RegisterForm')
         const login=document.getElementById('loginNav')
@@ -106,7 +148,7 @@ function Loginpage(){
             login.style.fontSize='large'
             login.style.fontWeight='bold'
             login.style.textDecoration='underline'
-            
+            errorDiv.style.display='none';
             register.style.fontWeight='normal'
             register.style.textDecoration='none'
         }
@@ -184,7 +226,15 @@ function Loginpage(){
                     </Navbar>
                     <div className="errorDiv">
                         <br></br>
-                       <center><p><FaExclamation size="2em" id="errorDivIcon"/> Credentials Provided are Incorrect</p></center>
+                        <div className="errorDivLogin">  
+                            <center><p><FaExclamation size="2em" id="errorDivIcon"/> Credentials Provided are Incorrect</p></center>
+                        </div>
+                        <div className="errorDivRegister">
+                            {errors.map((index) => (
+                            <center><p><FaExclamation size="1em" id="errorDivIcon"/>{index}</p></center>
+                            ))
+                            }
+                        </div>
                     </div>
                     <Form id="LoginForm" onSubmit={Login}>
                         <Form.Group controlId='formBasicEmail'>
@@ -215,7 +265,7 @@ function Loginpage(){
                         </Button>
                     </Form>
                     
-                    <Form id="RegisterForm" onSubmit={register} action="/Home">
+                    <Form id="RegisterForm" onSubmit={register}>
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Label id="formlabel">First Name</Form.Label>
                             <Form.Control type="text" placeholder='firstname' onChange={(e)=>{

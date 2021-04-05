@@ -115,7 +115,11 @@ Form.check[label]{
     margin:auto;
 } 
 
-.errorDiv p{
+.errorDivLogin p{
+    color:azure;
+    font-size: large;
+}
+.errorDivRegister p{
     color:azure;
     font-size: large;
 }

@@ -84,6 +84,16 @@ app.post('/api/insertFavorites',(req,res)=>{
     })
     
 })
+//Delete from Favorites Table
+app.post('/api/deleteFavorites',(req,res)=>{
+    const id=req.body.id;
+    const gsid=req.body.gsid;
+    const stmt="Delete from favorites where id=? and GS_ID=?;";
+    db.query(stmt,[id,gsid],(err,result)=>{
+        res.send("Success")
+    })
+})
+
 //get Favorited profile's gs_id
 app.post('/api/favorites',(req,res)=>{
     const userid=req.body.id;

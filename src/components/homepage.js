@@ -12,7 +12,6 @@ import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
 import {AiFillProfile,AiOutlineStar} from 'react-icons/ai'
-import { HandIndex } from 'react-bootstrap-icons'
 
 var historyArray=[];
 function Homepage(props) {
@@ -155,11 +154,13 @@ function Homepage(props) {
     }
     function DisplayFavorites(NameClass){
         console.log(NameClass)
-        historyArray.push(NameClass)
+        if(NameClass!="displayFavorites")
+            historyArray.push(NameClass)
         const favorite=document.querySelector('.displayFavorites')
         const name=document.querySelector('.'+NameClass)
-        favorite.style.display='block'
         name.style.display='none'
+        favorite.style.display='block'
+        
         Axios.post("http://localhost:3001/api/getDetails",{
             email:props.username
         }).then((result)=>{
@@ -170,6 +171,22 @@ function Homepage(props) {
                 setFavoriteFacultyProfile(res.data)
                 console.log(FavoriteFacultyProfile)
             })
+        })
+    }
+    function RemoveFromFavorites(gs_id){
+        Axios.post("http://localhost:3001/api/getDetails",{
+            email:props.username
+        }).then((result)=>{
+            console.log(result)
+            Axios.post("http://localhost:3001/api/deleteFavorites",{
+                id:result.data['0']['id'],
+                gsid:gs_id,
+            }).then((res)=>{
+                console.log(res.data)
+                if(res.data=="Success"){
+                    DisplayFavorites("displayFavorites")
+                }
+            }) 
         })
     }
     function goBack(c_page){
@@ -502,26 +519,31 @@ function Homepage(props) {
                     <br></br>
                     <div className="ListOfFaculties">
                         {FavoriteFacultyProfile.map((index) => (
-                            <Row id="ListOfFacultiesRow">
-                                <Col md={4}>
-                                   <center> <img src={index.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg"/></center>
-                                   <br></br>
-                                </Col>
-                                <Col md={7}>
-                                    <Row>
-                                    <p id="ListOfFacultiesPara">Name: <span>{index.prf_name}</span></p>
-                                    </Row>
-                                    <Row>
-                                    <p id="ListOfFacultiesPara">Place of work: <span>{index.prf_des}</span></p>
-                                    </Row>
-                                    <Row>
-                                    <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
-                                    </Row>
-                                    <Row>
-                                    <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'displayFavorites')}>View Articles</a></span></p>
-                                    </Row>
-                                </Col>
-                            </Row>
+                            <div>
+                                <Row className="justify-content-end" id="IndividualFacultyProfileButton">
+                                    <Button variant="outline-light" onClick={()=>RemoveFromFavorites(index.gs_id)} ><AiOutlineStar/> Remove From Favorites</Button>
+                                </Row>
+                                <Row id="ListOfFacultiesRow">
+                                    <Col md={4}>
+                                    <center> <img src={index.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg"/></center>
+                                    <br></br>
+                                    </Col>
+                                    <Col md={7}>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">Name: <span>{index.prf_name}</span></p>
+                                        </Row>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">Place of work: <span>{index.prf_des}</span></p>
+                                        </Row>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
+                                        </Row>
+                                        <Row>
+                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'displayFavorites')}>View Articles</a></span></p>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            </div>
                             
                         ))}
                     </div>
