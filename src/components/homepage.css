@@ -104,7 +104,6 @@
 }
 #footer footer p{
     color:white;
-
 } 
 
 .login{
@@ -127,6 +126,19 @@
     font-weight: bold;
     font-size: medium;
 }
+#ListOfFacultiesParaLink{
+    color:black;
+    font-weight: bold;
+    font-size: medium;
+    color:red;
+}
+#ListOfFacultiesParaLink:hover{
+    font-weight: bolder;
+    font-size: large;
+    text-decoration: underline;
+
+}
+
 #ListOfFacultiesPara span{
     color:black;
     font-weight: bolder;
@@ -139,7 +151,7 @@
     background-color: white;
     border-radius: 5px;
     margin-bottom: 20px;
-    /*  */
+    
 }
 #ListOfFacultiesPara span a{
     color:blue;

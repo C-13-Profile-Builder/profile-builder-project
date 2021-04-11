@@ -1,8 +1,8 @@
 import React,{useState} from 'react'
 import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row} from 'react-bootstrap'
 import './homepage.css'
-import './Loginpage.css'
-import Loginpage from './Loginpage'
+//import './Loginpage.css'
+import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
 import carousel1 from '../images/carousel1.jpeg'
 import carousel2 from '../images/carousel2.jpg'
@@ -11,10 +11,12 @@ import {ImProfile} from 'react-icons/im'
 import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
-import {AiFillProfile,AiOutlineStar} from 'react-icons/ai'
+import {AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
 
 var historyArray=[];
 function Homepage(props) {
+    let history=useHistory()
+    let {uname}=useParams()
     const [profilegenerate,setProfileGenerate]=useState('');
     const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
@@ -22,7 +24,7 @@ function Homepage(props) {
     const [email,setemail]=useState('');
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
-    const username=" "+props.username;
+    const username=" "+uname;
     
     var [FacultyProfileData,setFacultyProfileData]=useState([])
     const [IndividualProfile,setIndividualProfile]=useState([])
@@ -36,7 +38,7 @@ function Homepage(props) {
         profile.style.display='block'
         historyArray.push(NameClass)
         Axios.post('http://localhost:3001/api/getDetails',{
-            email:props.username
+            email:uname
         }).then((det)=>{
             setfname(det.data['0']['firstname'])
             setlastname(det.data['0']['lastname'])
@@ -70,14 +72,7 @@ function Homepage(props) {
     }
     
     function GotoLogin(){
-        const profile=document.querySelector('.deleteProfilePage')
-        const login=document.querySelector('.LoginRegister')
-        const home=document.querySelector('.home')
-        const Generation=document.querySelector('.Generation')
-        Generation.style.display='none'
-        home.style.display='none'
-        profile.style.display='none'
-        login.style.display='block'
+        history.push("/")
     }
 
     function deleteProfile(){
@@ -89,7 +84,7 @@ function Homepage(props) {
 
     function deleteProf(){
         Axios.post('http://localhost:3001/api/delete',{
-            email:props.username,
+            email:uname,
         }).then(()=>{
             GotoLogin();
             alert("Delete Successful")
@@ -135,7 +130,7 @@ function Homepage(props) {
     }
     function AddToFavorites(gs_id){
         Axios.post("http://localhost:3001/api/getDetails",{
-            email:props.username
+            email:uname
         }).then((result)=>{
             console.log(result)
             Axios.post("http://localhost:3001/api/insertFavorites",{
@@ -147,6 +142,8 @@ function Homepage(props) {
                 {
                     var popup = document.getElementById("myPopup");
                     popup.classList.toggle("show");
+                    popup.classList.toggle("popuptext::after");
+                    
                 }
             })
             
@@ -162,7 +159,7 @@ function Homepage(props) {
         favorite.style.display='block'
         
         Axios.post("http://localhost:3001/api/getDetails",{
-            email:props.username
+            email:uname
         }).then((result)=>{
             Axios.post("http://localhost:3001/api/favorites",{
                 id:result.data['0']['id'],
@@ -175,7 +172,7 @@ function Homepage(props) {
     }
     function RemoveFromFavorites(gs_id){
         Axios.post("http://localhost:3001/api/getDetails",{
-            email:props.username
+            email:uname
         }).then((result)=>{
             console.log(result)
             Axios.post("http://localhost:3001/api/deleteFavorites",{
@@ -209,17 +206,21 @@ function Homepage(props) {
                     <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse>
+                        
+                        
                         <Form.Control type="text" placeholder="Search" className="mr-sm-2" onChange={(e)=>setProfileGenerate(e.target.value)}/>
                         <Button variant="outline-success"  onClick={()=>ProfileGenerate("home")}>Search</Button>
+                            
+                        
                     </Navbar.Collapse>
                     <Navbar.Collapse className="justify-content-end">
                         <Nav.Link href="#link" id="HomeLink"><FaHome size='1.5em'/> HOME</Nav.Link>
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
-                            <NavDropdown.Item onClick={()=>profile("home")} to="/Profile">Profile</NavDropdown.Item>
+                            <NavDropdown.Item onClick={()=>profile("home")} >Profile</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>DisplayFavorites("home")}>Favorites</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item onClick={deleteProfile}>Delete</NavDropdown.Item>
-                            <NavDropdown.Item onClick={GotoLogin} path="/login">Sign Out</NavDropdown.Item>
+                            <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                         </NavDropdown>  
                     </Navbar.Collapse>
                 </Navbar>
@@ -322,12 +323,12 @@ function Homepage(props) {
                     <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse className="justify-content-end">
-                    <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("Profile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                    <Nav.Link id="HomeLink" onClick={()=>goBack("Profile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                     <Nav.Link onClick={()=>GotoHome("Profile")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                             <NavDropdown.Item onClick={()=>DisplayFavorites("Profile")}>Favorites</NavDropdown.Item>
                             <NavDropdown.Divider />
-                            <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                            <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                         </NavDropdown>  
                     </Navbar.Collapse>
                 </Navbar>
@@ -378,13 +379,13 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("Generation")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link id="HomeLink" onClick={()=>goBack("Generation")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("Generation")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("Generation")}>Profile</NavDropdown.Item>
                                 <NavDropdown.Item onClick={()=>DisplayFavorites("Generation")}>Favorites</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                                <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                             </NavDropdown>  
                         </Navbar.Collapse>
                     </Navbar>
@@ -426,13 +427,13 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("IndividualFacultyProfile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link id="HomeLink" onClick={()=>goBack("IndividualFacultyProfile")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("IndividualFacultyProfile")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("IndividualFacultyProfile")}>Profile</NavDropdown.Item>
                                 <NavDropdown.Item onClick={()=>DisplayFavorites("IndividualFacultyProfile")}>Favorites</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                                <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                             </NavDropdown>  
                         </Navbar.Collapse>
                     </Navbar>
@@ -446,7 +447,7 @@ function Homepage(props) {
                                     <Button variant="outline-dark" onClick={()=>AddToFavorites(index.gs_id)} id="popup"><AiOutlineStar/> Favorites<span className="popuptext" id="myPopup">Already In Favorites!</span></Button>
                                 </Row>
                                 <Row >
-                                    <Col md={4}>
+                                    <Col md={5}>
                                     <center> <img src={index.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg"/></center>
                                     <br></br>
                                     </Col>
@@ -460,16 +461,24 @@ function Homepage(props) {
                                         <Row>
                                         <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
                                         </Row>
+                                        <Row>
+                                            <a id="ListOfFacultiesParaLink"><AiOutlineMail size="1.5em" color="blue"/>  <span>{index.email}</span></a>
+                                        </Row>
+                                        <Row>
+                                            <a id="ListOfFacultiesParaLink"><AiOutlinePhone size="1.5em" color="blue"/>  <span>{index.phonenumber}</span></a>
+                                        </Row>
+                                        
                                     </Col>
                                 </Row>
+                                <br></br>
                                 <Row id="subjectRow">
                                 {domains.map((index) => (
                                     <Col>
                                        <center> <p id="ListOfFacultiesPara">{index.domain}</p></center>
                                     </Col>
                                 ))}
-                            </Row>
-                            <br></br>
+                                </Row>
+                                <br></br>
                                 </div>
                                 
                             ))}
@@ -504,12 +513,12 @@ function Homepage(props) {
                         <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                         <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#home" id="HomeLink" onClick={()=>goBack("displayFavorites")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link id="HomeLink" onClick={()=>goBack("displayFavorites")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
                         <Nav.Link onClick={()=>GotoHome("displayFavorites")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
                             <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                                 <NavDropdown.Item onClick={()=>profile("displayFavorites")}>Profile</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item href="#">Sign Out</NavDropdown.Item>
+                                <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                             </NavDropdown>  
                         </Navbar.Collapse>
                     </Navbar>

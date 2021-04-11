@@ -2,13 +2,15 @@ import React, { Component,useState } from 'react'
 import {Button,Navbar,Nav,Form,Col,Row} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
-import Homepage from './Homepage'
+//import Homepage from './Homepage'
 import * as emailjs from 'emailjs-com'
 import {ImProfile} from 'react-icons/im'
 import {FaExclamation} from 'react-icons/fa'
+import { Router, Route, Switch, BrowserRouter,useHistory } from 'react-router-dom';
 var Errorstag=[]
 
 function Loginpage(){
+    let history=useHistory()
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
     const [dob,setdob]=useState('');
@@ -17,11 +19,11 @@ function Loginpage(){
     const [phno,setphno]=useState('');
     const [confirmpwd,setconfirmpwd]=useState('');
     const [GSurl,seturl]=useState('');
-    
     const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
     var Studentcheck=false;
     var Facultycheck=false;
+
    function register(e){
        console.log(GSurl)
        const urlParams = new URLSearchParams(GSurl);
@@ -42,7 +44,7 @@ function Loginpage(){
     {
         Errorstag.push("UserType field is Empty")   
     }
-    if((Studentcheck?'N':'Y')==='Y' && GSurl==='')
+    if(Facultycheck && GSurl==='')
     {
         Errorstag.push("Faculty GS-ID field is Empty")   
     }
@@ -50,7 +52,6 @@ function Loginpage(){
     const errorDiv=document.querySelector('.errorDiv')
     if(Errorstag.length==0)
     {
-        
         Axios.post('http://localhost:3001/api/register',
         {firstname:firstname,
         lastname:lastname,
@@ -61,10 +62,12 @@ function Loginpage(){
         userType:Studentcheck?'N':'Y',
         GS_ID:urlParams.get('user'),
     }).then(()=>{
-        const homepage=document.querySelector('.Homepage')
-        const firstpage=document.querySelector('.LoginRegister')
-        firstpage.style.display='none'
-        homepage.style.display='block'
+        console.log(Studentcheck)
+        // const homepage=document.querySelector('.Homepage')
+        // const firstpage=document.querySelector('.LoginRegister')
+        // firstpage.style.display='none'
+        // homepage.style.display='block'
+        history.push("/homepage/"+email)
         errorDiv.style.display='none'
         //
         Axios.post('http://localhost:3001/api/getDetails',{
@@ -79,8 +82,10 @@ function Loginpage(){
     })
     })
    }
-   else{
-    Errorstag.map((value,index,array)=>(
+   else
+   {        
+       console.log(!Studentcheck)
+        Errorstag.map((value,index,array)=>(
         console.log(index)
     ))
     console.log("in else")
@@ -92,10 +97,8 @@ function Loginpage(){
     console.log(Errorstag)
 
    }
-
     }
     
-
     function Login(e){
         // alert(email);
         e.preventDefault();
@@ -109,10 +112,11 @@ function Loginpage(){
             const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
             console.log(l.data)
-        const homepage=document.querySelector('.Homepage')
-        const firstpage=document.querySelector('.LoginRegister')
-        firstpage.style.display='none'
-        homepage.style.display='block'
+        // const homepage=document.querySelector('.Homepage')
+        // const firstpage=document.querySelector('.LoginRegister')
+        history.push("/homepage/"+email)
+        //firstpage.style.display='none'
+        // homepage.style.display='block'
         errorDiv.style.display='none'
         console.log(l);}
         else{
@@ -260,7 +264,7 @@ function Loginpage(){
                         <Form.Group className="checkbox"> 
                         <Form.Check type="checkbox" label='Remember me'></Form.Check>
                         </Form.Group>
-                        <Button type="submit" variant="primary" id="FormButton">
+                        <Button type="submit" variant="primary" id="FormButton" to="/hii">
                             Submit
                         </Button>
                     </Form>
@@ -390,13 +394,16 @@ function Loginpage(){
                 </div>
                 
                 </div>
-                <div className="Homepage">
+                {/* <div className="Homepage">
                     <Homepage username={email}>
 
                     </Homepage>
-                </div>
+                </div> */}
+                
+                    
                 
             </div>
+            
         )
     }
 

@@ -140,7 +140,7 @@ app.post('/api/generate',(req,res)=>{
 app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
     const id=req.body.gsid;
     const stmt="SELECT gswork.domain FROM gswork,user where user.GS_ID=? and gswork.id=user.id";
-    const stmtone="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gsprofile where gsprofile.gs_id=?";
+    const stmtone="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url,user.email,user.phonenumber FROM gsprofile,user where gsprofile.gs_id=? and user.id=gsprofile.id";
     const stmttwo="SELECT gsarticle.title,gsarticle.cite,gsarticle.year,gsarticle.authors from gsarticle,user where user.GS_ID=? and user.id=gsarticle.id"
     db.query(stmt,[id],(err,result)=>{
         console.log(result)
