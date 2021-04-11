@@ -21,8 +21,8 @@ function Loginpage(){
     const [GSurl,seturl]=useState('');
     const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
-    var Studentcheck=false;
-    var Facultycheck=false;
+    const[Studentcheck,setStudentcheck]=useState(false)
+    const [Facultycheck,setFacultycheck]=useState(false);
 
    function register(e){
        console.log(GSurl)
@@ -42,6 +42,7 @@ function Loginpage(){
     }
     if(!Studentcheck && !Facultycheck)
     {
+        console.log(Studentcheck,Facultycheck)
         Errorstag.push("UserType field is Empty")   
     }
     if(Facultycheck && GSurl==='')
@@ -307,7 +308,7 @@ function Loginpage(){
                                         label="Faculty"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios1"
-                                        onChange={()=>Student_or_Faculty("faculty")}
+                                        onChange={()=>setFacultycheck(!Facultycheck)}
                                     />
                             </Col>
                                 <Col xs={6}>
@@ -316,7 +317,7 @@ function Loginpage(){
                                         label="Student"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios2"
-                                        onChange={()=>Student_or_Faculty("student")}
+                                        onChange={()=>setStudentcheck(!Studentcheck)}
                                     />
                                 </Col>
                             </Row>
