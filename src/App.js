@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button'
 import Loginpage from './components/Loginpage';
-import Homepage from './components/Homepage';
+import Homepage from './components/homepage';
 import { Router, Route, Switch, BrowserRouter } from 'react-router-dom';
 import { createBrowserHistory } from 'history'
 import './App.css';
