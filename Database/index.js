@@ -117,6 +117,19 @@ app.post('/api/update',(req,res)=>{
     })
 
 })
+//update Password
+app.post('/api/updatePassword',(req,res)=>{
+    
+    const email=req.body.email;
+    const pwd=req.body.pwd;
+    const stmt="UPDATE user SET password=? WHERE email=?;";
+    db.query(stmt,[pwd,email],(errs,result)=>{
+        console.log(result)
+        res.send("Hello world")
+    })
+
+})
+app.post
 //delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;

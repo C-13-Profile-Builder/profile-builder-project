@@ -64,13 +64,8 @@ function Loginpage(){
         GS_ID:urlParams.get('user'),
     }).then(()=>{
         console.log(Studentcheck)
-        // const homepage=document.querySelector('.Homepage')
-        // const firstpage=document.querySelector('.LoginRegister')
-        // firstpage.style.display='none'
-        // homepage.style.display='block'
         history.push("/homepage/"+email)
         errorDiv.style.display='none'
-        //
         Axios.post('http://localhost:3001/api/getDetails',{
         email:email
         }).then((result)=>{
@@ -89,7 +84,6 @@ function Loginpage(){
         Errorstag.map((value,index,array)=>(
         console.log(index)
     ))
-    console.log("in else")
     errorDiv.style.display='block'
     const errorDivLogin=document.querySelector('.errorDivLogin')
     errorDivLogin.style.display='none'
@@ -113,11 +107,7 @@ function Loginpage(){
             const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
             console.log(l.data)
-        // const homepage=document.querySelector('.Homepage')
-        // const firstpage=document.querySelector('.LoginRegister')
         history.push("/homepage/"+email)
-        //firstpage.style.display='none'
-        // homepage.style.display='block'
         errorDiv.style.display='none'
         console.log(l);}
         else{
@@ -179,7 +169,7 @@ function Loginpage(){
         var forgotpasswordemail={
             from_name:'mksroct2000@gmail.com',
             to_name:sendEmail,
-            message:<button>Hello</button>,
+            message:'http://localhost:3000/passwordChange/'+sendEmail,
             subject:'Password change request',
         }
         e.preventDefault();
