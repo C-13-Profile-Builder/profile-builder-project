@@ -12,8 +12,12 @@ import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
 import {AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Border } from 'react-bootstrap-icons'
 
 var historyArray=[];
+var userchoice=[]
 function Homepage(props) {
     let history=useHistory()
     let {uname}=useParams()
@@ -25,12 +29,25 @@ function Homepage(props) {
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
     const username=" "+uname;
-    
     var [FacultyProfileData,setFacultyProfileData]=useState([])
     const [IndividualProfile,setIndividualProfile]=useState([])
     var [domains,setdomain]=useState([])
     var [articles,setarticles]=useState([])
     var [FavoriteFacultyProfile,setFavoriteFacultyProfile]=useState([])
+    searchdropdown()
+    function searchdropdown() {
+        var i=0
+        Axios.post("http://localhost:3001/api/getForDropdown",{}).then((t)=>{
+        for(i=0;i<t.data[0].length;i++){
+            userchoice.push(t.data[0][i]['prf_name'])
+        }
+        for(i=0;i<t.data[1].length;i++){
+            userchoice.push(t.data[1][i]['domain'])
+        }
+        })
+        
+    }
+    
     function profile(NameClass){
         const name=document.querySelector('.'+NameClass)
         const profile=document.querySelector('.Profile')
@@ -95,15 +112,9 @@ function Homepage(props) {
         historyArray.push(from)
         if(profilegenerate!=''){
             Axios.post('http://localhost:3001/api/generate',{
-              subject: profilegenerate
+              subject_name: profilegenerate
             }).then((result)=>{
-                console.log(result.data)
-                console.log(result)
                 setFacultyProfileData(result.data)
-                console.log(FacultyProfileData)
-                FacultyProfileData.map((p)=>{
-                    console.log(p)
-                })
             })
             const Generation=document.querySelector('.Generation')
             const fromclass=document.querySelector('.'+from)
@@ -206,9 +217,16 @@ function Homepage(props) {
                     <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse>
-                        
-                        
-                        <Form.Control type="text" placeholder="Search" className="mr-sm-2" onChange={(e)=>setProfileGenerate(e.target.value)}/>
+                        {/* <Form.Control type="text" placeholder="Search" className="mr-sm-2" onChange={(e)=>setProfileGenerate(e.target.value)}/> */}
+                        <Autocomplete
+                        id="combo-box-demo"
+                        options={userchoice}
+                        getOptionLabel={(option) => option}
+                        onChange={(event, value) => setProfileGenerate(value)}
+                        style={{ width: 300,marginRight:20 , borderColor: '#ffffff'}}
+                        renderInput={(params) => <TextField {...params} 
+                        label="Search" variant="outlined" id="autocompleteTextField"/>}
+                        />
                         <Button variant="outline-success"  onClick={()=>ProfileGenerate("home")}>Search</Button>
                             
                         

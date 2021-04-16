@@ -129,7 +129,7 @@ app.post('/api/updatePassword',(req,res)=>{
     })
 
 })
-app.post
+
 //delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;
@@ -142,13 +142,33 @@ app.post('/api/delete',(req,res)=>{
 })
 //generate details in webpage
 app.post('/api/generate',(req,res)=>{
-    const subject=req.body.subject;
+    const subject_name=req.body.subject_name;
     const stmt="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gswork,gsprofile where domain=? and gswork.id=gsprofile.id"
-    db.query(stmt,[subject],(err,result)=>{
-        // console.log(result)
-        res.send(result)
+    db.query(stmt,[subject_name],(err,result)=>{
+        console.log(result)
+        if(result.length==0){
+            const stmt1="SELECT DISTINCT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gswork,gsprofile where prf_name=? and gswork.id=gsprofile.id"
+            db.query(stmt1,[subject_name],(err1,result1)=>{
+                console.log(result1)
+                res.send(result1)
+            })
+        }
+        else{
+            res.send(result)
+        }
+        })
+})
+//get prf_name, domain
+app.post('/api/getForDropdown',(req,res)=>{
+    const stmt="SELECT prf_name FROM gsprofile"
+    const stmt1="SELECT domain FROM gswork"
+    db.query(stmt,(err,result)=>{
+        db.query(stmt1,(err1,result1)=>{
+            res.send([result,result1]) 
+        })
     })
 })
+
 //generate all details of a faculty
 app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
     const id=req.body.gsid;
