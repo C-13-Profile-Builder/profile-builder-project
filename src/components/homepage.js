@@ -1,7 +1,6 @@
 import React,{useState} from 'react'
 import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row} from 'react-bootstrap'
 import './homepage.css'
-//import './Loginpage.css'
 import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
 import carousel1 from '../images/carousel1.jpeg'
@@ -24,8 +23,8 @@ function Homepage(props) {
     const [profilegenerate,setProfileGenerate]=useState('');
     const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
-    const [dob,setdob]=useState('');
     const [email,setemail]=useState('');
+    
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
     const username=" "+uname;
@@ -50,16 +49,16 @@ function Homepage(props) {
     
     function profile(NameClass){
         const name=document.querySelector('.'+NameClass)
-        const profile=document.querySelector('.Profile')
+        const profiles=document.querySelector('.Profile')
         name.style.display='none'
-        profile.style.display='block'
+        profiles.style.display='block'
         historyArray.push(NameClass)
         Axios.post('http://localhost:3001/api/getDetails',{
             email:uname
         }).then((det)=>{
             setfname(det.data['0']['firstname'])
             setlastname(det.data['0']['lastname'])
-            setdob(det.data['0']['dob'])
+            
             setemail(det.data['0']['email'])
             setphno(det.data['0']['phonenumber'])
             setsummary(det.data['0']['summary'])
@@ -94,8 +93,8 @@ function Homepage(props) {
 
     function deleteProfile(){
         const home=document.querySelector('.home')
-        const profile=document.querySelector('.deleteProfilePage')
-        profile.style.display='block'
+        const profiles=document.querySelector('.deleteProfilePage')
+        profiles.style.display='block'
         home.style.display='none'
     }
 
@@ -490,9 +489,9 @@ function Homepage(props) {
                                 </Row>
                                 <br></br>
                                 <Row id="subjectRow">
-                                {domains.map((index) => (
+                                {domains.map((index1) => (
                                     <Col>
-                                       <center> <p id="ListOfFacultiesPara">{index.domain}</p></center>
+                                       <center> <p id="ListOfFacultiesPara">{index1.domain}</p></center>
                                     </Col>
                                 ))}
                                 </Row>

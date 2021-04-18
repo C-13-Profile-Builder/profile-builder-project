@@ -2,7 +2,6 @@ import React, { Component,useState } from 'react'
 import {Button,Navbar,Nav,Form,Col,Row} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
-//import Homepage from './Homepage'
 import * as emailjs from 'emailjs-com'
 import {ImProfile} from 'react-icons/im'
 import {FaExclamation} from 'react-icons/fa'
@@ -91,7 +90,6 @@ function Loginpage(){
     }
     
     function Login(e){
-        // alert(email);
         e.preventDefault();
         Axios.post('http://localhost:3001/api/login',{
             email:email,
