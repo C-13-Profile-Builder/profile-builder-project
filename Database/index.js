@@ -48,7 +48,9 @@ app.post('/api/login',(req,res)=>{
     const stmt="SELECT * FROM user WHERE email=? and pwd=?;";
     db.query(stmt,[email,pwd],(errs,result)=>{
         if(result.length>0)
-        res.send("Yes")
+        {
+            res.send("Yes")
+        }
         else{
             res.send("no")
         }
@@ -76,8 +78,8 @@ app.post('/api/insertFavorites',(req,res)=>{
     }
     else{
         const stmt="INSERT INTO favorites (id,GS_ID) VALUES (?,?);";
-        db.query(stmt,[id,gsid],(errs,result)=>{
-            console.log(errs)
+        db.query(stmt,[id,gsid],(errs1,result1)=>{
+            console.log(errs1)
             res.send("No")
         })
     }
@@ -182,7 +184,7 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
             db.query(stmttwo,[id],(err2,resultss)=>{
                 console.log(resultss)
                 
-                arr=[result,results,resultss]
+                let arr=[result,results,resultss]
                 console.log(arr[0])
                 res.send([result,results,resultss])
             })
@@ -224,14 +226,14 @@ app.post('/gs/generate', (req, res) => {
       
       profile.prfarea.forEach((elem)=>{
         const q2="INSERT INTO gswork (id,domain) VALUES (?,?);";
-        db.query(q2,[userid,elem],(errs,result)=>{console.log(errs)})
+        db.query(q2,[userid,elem],(errs,result1)=>{console.log(errs)})
       });
 
       articles.forEach((elem)=>{
         const q3="INSERT INTO gsarticle (id,title,cite,year,authors) VALUES (?,?,?,?,?);";
-        db.query(q3,[userid,elem.title,elem.cite,elem.year,elem.author],(errs,result)=>{console.log(errs)})
+        db.query(q3,[userid,elem.title,elem.cite,elem.year,elem.author],(errs,result2)=>{console.log(errs)})
       });
-//      console.log(profile);
+
       res.setHeader('Content-Type', 'application/json');
       res.statusCode = 200;
       res.end(JSON.stringify(profile));  
