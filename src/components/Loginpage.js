@@ -21,8 +21,8 @@ function Loginpage(){
     const [GSurl,seturl]=useState('');
     const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
-    const[Studentcheck,setStudentcheck]=useState(false)
-    const [Facultycheck,setFacultycheck]=useState(false);
+    let [Studentcheck,setStudentcheck]=useState(false);
+    let [Facultycheck,setFacultycheck]=useState(false);
 
    function register(e){
        console.log(GSurl)
@@ -80,10 +80,6 @@ function Loginpage(){
    }
    else
    {        
-       console.log(!Studentcheck)
-        Errorstag.map((value,index,array)=>(
-        console.log(index)
-    ))
     errorDiv.style.display='block'
     const errorDivLogin=document.querySelector('.errorDivLogin')
     errorDivLogin.style.display='none'
@@ -149,21 +145,6 @@ function Loginpage(){
         }
     }
 
-    function Student_or_Faculty(type){
-        const gsurl=document.getElementById("GsURL");
-        if(type==='student'){
-            Studentcheck=true;
-            Facultycheck=false;
-            gsurl.style.display='none'
-        }
-        else{
-            Facultycheck=true;
-            Studentcheck=false;
-            gsurl.style.display='block'
-        }
-        console.log(Studentcheck,Facultycheck)
-
-    }
 
     function forgotpasswordsendemail(e){
         var forgotpasswordemail={
