@@ -13,10 +13,22 @@ import {GiTeacher} from 'react-icons/gi'
 import {AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Border } from 'react-bootstrap-icons'
+import Modal from "react-bootstrap/Modal"
 
 var historyArray=[];
 var userchoice=[]
+function searchdropdown() {
+    var i=0
+    userchoice=[]
+    Axios.post("http://localhost:3001/api/getForDropdown",{}).then((t)=>{
+    for(i=0;i<t.data[0].length;i++){
+        userchoice.push(t.data[0][i]['prf_name'])
+    }
+    for(i=0;i<t.data[1].length;i++){
+        userchoice.push(t.data[1][i]['domain'])
+    }
+    })
+}
 function Homepage(props) {
     let history=useHistory()
     let {uname}=useParams()
@@ -24,7 +36,6 @@ function Homepage(props) {
     const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
     const [email,setemail]=useState('');
-    
     const [phno,setphno]=useState('');
     const [summary,setsummary]=useState('')
     const username=" "+uname;
@@ -33,19 +44,14 @@ function Homepage(props) {
     var [domains,setdomain]=useState([])
     var [articles,setarticles]=useState([])
     var [FavoriteFacultyProfile,setFavoriteFacultyProfile]=useState([])
+    
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    
     searchdropdown()
-    function searchdropdown() {
-        var i=0
-        Axios.post("http://localhost:3001/api/getForDropdown",{}).then((t)=>{
-        for(i=0;i<t.data[0].length;i++){
-            userchoice.push(t.data[0][i]['prf_name'])
-        }
-        for(i=0;i<t.data[1].length;i++){
-            userchoice.push(t.data[1][i]['domain'])
-        }
-        })
-        
-    }
+    
     
     function profile(NameClass){
         const name=document.querySelector('.'+NameClass)
@@ -103,7 +109,6 @@ function Homepage(props) {
             email:uname,
         }).then(()=>{
             GotoLogin();
-            alert("Delete Successful")
         })
     }
     
@@ -236,7 +241,7 @@ function Homepage(props) {
                             <NavDropdown.Item onClick={()=>profile("home")} >Profile</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>DisplayFavorites("home")}>Favorites</NavDropdown.Item>
                             <NavDropdown.Divider />
-                            <NavDropdown.Item onClick={deleteProfile}>Delete</NavDropdown.Item>
+                            <NavDropdown.Item onClick={handleShow}>Delete</NavDropdown.Item>
                             <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
                         </NavDropdown>  
                     </Navbar.Collapse>
@@ -381,14 +386,30 @@ function Homepage(props) {
                     <Button type="submit" variant="primary" onClick={update}>Edit</Button>
                 </div>
             </div>
-            <div className='deleteProfilePage'>
+
+            <Modal show={show} onHide={handleClose} animation={false}>
+                <Modal.Header closeButton>
+                <Modal.Title>Delete Account</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Click The button to delete account Permanently</Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Close
+                </Button>
+                <Button variant="primary" onClick={deleteProf}>
+                    Delete
+                </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* <div className='deleteProfilePage'>
                 <Form.Group controlId="formPlaintext">
                     <Form.Label id="formlabel">Click The button to delete account Permanently</Form.Label>
                 </Form.Group>
                 <Button type="submit" variant="primary" onClick={deleteProf}>
                     delete
                 </Button>
-            </div>
+            </div> */}
 
             <div className='Generation'>
                 <div>

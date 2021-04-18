@@ -163,7 +163,7 @@ app.post('/api/generate',(req,res)=>{
 //get prf_name, domain
 app.post('/api/getForDropdown',(req,res)=>{
     const stmt="SELECT prf_name FROM gsprofile"
-    const stmt1="SELECT domain FROM gswork"
+    const stmt1="SELECT DISTINCT(domain) FROM gswork"
     db.query(stmt,(err,result)=>{
         db.query(stmt1,(err1,result1)=>{
             res.send([result,result1]) 

@@ -20,8 +20,8 @@ function Loginpage(){
     const [GSurl,seturl]=useState('');
     const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
-    let [Studentcheck,setStudentcheck]=useState(false);
-    let [Facultycheck,setFacultycheck]=useState(false);
+    var [Studentcheck,setStudentcheck]=useState(false);
+    var [Facultycheck,setFacultycheck]=useState(false);
 
    function register(e){
        console.log(GSurl)
@@ -41,12 +41,17 @@ function Loginpage(){
     }
     if(!Studentcheck && !Facultycheck)
     {
-        console.log(Studentcheck,Facultycheck)
         Errorstag.push("UserType field is Empty")   
     }
     if(Facultycheck && GSurl==='')
     {
         Errorstag.push("Faculty GS-ID field is Empty")   
+    }
+    if(pwd==''){
+        Errorstag.push("Password field is Empty")
+    }
+    if(pwd!=confirmpwd && pwd!=''){
+        Errorstag.push("Password and Confirm password fields doesnt match")
     }
     seterror(Errorstag);
     const errorDiv=document.querySelector('.errorDiv')
@@ -142,7 +147,23 @@ function Loginpage(){
             register.style.textDecoration='none'
         }
     }
+    function student_facultycheck(type)
+    {
+        const gsurl=document.getElementById('GsURL')
+        if(type=='student'){
+            setStudentcheck(true)
+            setFacultycheck(false)
+            console.log("In student")
+            gsurl.style.display='none'
+        }
+        else{
+            setStudentcheck(false)
+            setFacultycheck(true)
+            console.log("In faculty")
+            gsurl.style.display='block'
 
+        }
+    }
 
     function forgotpasswordsendemail(e){
         var forgotpasswordemail={
@@ -277,7 +298,7 @@ function Loginpage(){
                                         label="Faculty"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios1"
-                                        onChange={()=>setFacultycheck(!Facultycheck)}
+                                        onChange={()=>student_facultycheck('faculty')}
                                     />
                             </Col>
                                 <Col xs={6}>
@@ -286,7 +307,7 @@ function Loginpage(){
                                         label="Student"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios2"
-                                        onChange={()=>setStudentcheck(!Studentcheck)}
+                                        onChange={()=>student_facultycheck('student')}
                                     />
                                 </Col>
                             </Row>
