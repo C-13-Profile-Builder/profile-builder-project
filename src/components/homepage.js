@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row} from 'react-bootstrap'
+import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image} from 'react-bootstrap'
 import './homepage.css'
 import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
@@ -10,11 +10,12 @@ import {ImProfile} from 'react-icons/im'
 import {IoReturnUpBackSharp} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
-import {AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
+import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Modal from "react-bootstrap/Modal"
-
+import Typography from '@material-ui/core/Typography';
+import Pagination from '@material-ui/lab/Pagination';
 var historyArray=[];
 var userchoice=[]
 function searchdropdown() {
@@ -43,10 +44,17 @@ function Homepage(props) {
     const [IndividualProfile,setIndividualProfile]=useState([])
     var [domains,setdomain]=useState([])
     var [articles,setarticles]=useState([])
+    var [profilearticles,setprofilearticles]=useState([])
     var [FavoriteFacultyProfile,setFavoriteFacultyProfile]=useState([])
-    
+    var [gsid,setgsid]=useState('');
+    var [gsprf_des,setgsprf_des]=useState('');
+    var [gsimg,setgsimg]=useState('');
+    var [facwork,setfacwork]=useState();
+    var [facdomain,setfacdomain]=useState('');
+    var [changepageno,setchangepageno]=useState(0);
+    var [student_or_faculty,setstudent_or_faculty]=useState('')
+    var [paginationpageno,setpaginationpageno]=useState(1)
     const [show, setShow] = useState(false);
-
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     
@@ -58,18 +66,84 @@ function Homepage(props) {
         const profiles=document.querySelector('.Profile')
         name.style.display='none'
         profiles.style.display='block'
+        const faculty_or_not=document.querySelector('#GoogleSDetails')
+        const profilearticle=document.querySelector('#GoogleSDetailsArticles')
+        
         historyArray.push(NameClass)
         Axios.post('http://localhost:3001/api/getDetails',{
             email:uname
         }).then((det)=>{
             setfname(det.data['0']['firstname'])
             setlastname(det.data['0']['lastname'])
-            
             setemail(det.data['0']['email'])
             setphno(det.data['0']['phonenumber'])
             setsummary(det.data['0']['summary'])
+            if(det.data['0']['Faculty']=='Y'){
+                setstudent_or_faculty('N')
+                faculty_or_not.style.display='block';
+                profilearticle.style.display='block'
+                Axios.post('http://localhost:3001/api/getgsdetailsgorprofile',{
+                    mail:uname
+                }).then((result)=>{
+                    var i;
+                    var s=''
+                    result.data['1'].forEach((index)=>{
+                        s=s+','+index['domain']
+                    })
+                    console.log(result)
+                    setgsid(result.data['0']['0']['gs_id'])
+                    setgsprf_des(result.data['0']['0']['prf_des'])
+                    setgsimg(result.data['0']['0']['photo_url'])
+                    setfacwork(result.data['0']['0']['COUNT(gsarticle.id)'])
+                    setfacdomain(s.substring(1))
+                })
+                profilePagination(paginationpageno)
+
+            }
+            else{
+                setstudent_or_faculty('Y')
+                faculty_or_not.style.display='none';
+            }
         })
     }
+
+    const paginationpagechange=(event,value)=>{
+        setpaginationpageno(value)
+        profilePagination(paginationpageno)
+    }
+    function profilePagination(val){
+        console.log(val)
+        var arr=[]
+        Axios.post("http://localhost:3001/api/generatearticlesinprofile",{
+            mail:uname
+        }).then((result)=>{
+            setarticles(result.data)
+        })
+        var m=Math.min(articles.length,(val-1)*3 + 3)
+        for(var i=(val-1)*3;i<m;i++){
+            arr.push(articles[i])
+        }
+        console.log(arr)
+        setchangepageno(changepageno+3)
+        setprofilearticles(arr)
+    }
+
+    function deletegsarticle(id,value){
+        console.log("Hii",id,value)
+        Axios.post("http://localhost:3001/api/deletegsarticles",{
+            id:id
+        }).then((t)=>{
+            console.log(t)
+            if(t.data=="Success"){
+                alert("Delete Succcessful")
+                profilePagination(paginationpageno)
+            }
+            else{
+                alert("Delete failed")
+            }
+        })
+    }
+
     function update(){
         console.log(fname)
         Axios.post('http://localhost:3001/api/update',{
@@ -94,15 +168,13 @@ function Homepage(props) {
     }
     
     function GotoLogin(){
+        const faculty_or_not=document.querySelector('#GoogleSDetails')
+        faculty_or_not.style.display='none'
+        const profilearticle=document.querySelector('#GoogleSDetailsArticles')
+        profilearticle.style.display='none'
         history.push("/")
     }
 
-    function deleteProfile(){
-        const home=document.querySelector('.home')
-        const profiles=document.querySelector('.deleteProfilePage')
-        profiles.style.display='block'
-        home.style.display='none'
-    }
 
     function deleteProf(){
         Axios.post('http://localhost:3001/api/delete',{
@@ -143,6 +215,8 @@ function Homepage(props) {
             console.log(articles)
         })
     }
+    
+
     function AddToFavorites(gs_id){
         Axios.post("http://localhost:3001/api/getDetails",{
             email:uname
@@ -356,34 +430,95 @@ function Homepage(props) {
                 </Navbar>
                 </div>
                 <div className="Details">
-                    <Form.Group controlId="exampleForm.ControlTextarea1">
-                        <Form.Label id="formlabel">First Name</Form.Label>
-                        <Form.Control type="text" placeholder='firstname' value={fname} onChange={(e)=>{setfname(e.target.value)}}/>
-                    </Form.Group>
-                    <Form.Group controlId="exampleForm.ControlTextarea1">
-                        <Form.Label id="formlabel">Last Name</Form.Label>
-                        <Form.Control type="text" placeholder='lastname' value={lname} onChange={(e)=>{setlastname(e.target.value)}} />
-                    </Form.Group>
-                    <Form.Group controlId="formPlaintextEmail">
-                        <Form.Label id="formlabel">PhNumber</Form.Label>
-                            <Form.Row>
-                                <Col >
-                                    <Form.Control id="formlabel" plaintext readOnly defaultValue="+91" />
-                                </Col>
-                                <Col xs={10}>
-                                    <Form.Control type="text" placeholder='PhNO' value={phno} onChange={(e)=>setphno(e.target.value)}/>
-                                </Col>
-                            </Form.Row>
-                    </Form.Group>
-                    <Form.Group controlId='formBasicEmail'>
-                        <Form.Label id="formlabel">Email Address</Form.Label>
-                        <Form.Control type="email" placeholder='mailId' value={email} onChange={(e)=>setemail(e.target.value)} ></Form.Control>
-                    </Form.Group> 
-                    <Form.Group controlId="formPlaintextEmail">
-                        <Form.Label id="formlabel">Summary(Max 1000 char)</Form.Label>
-                        <Form.Control type="text" maxLength="1000" rows={5} value={summary} onChange={(e)=>setsummary(e.target.value)}></Form.Control>
-                    </Form.Group>
-                    <Button type="submit" variant="primary" onClick={update}>Edit</Button>
+                    <Row>
+                    <Col md={student_or_faculty=='Y'?12:6}>
+                        <div id="peronalDetails">
+                            <center><h2 id="featureHeader">Personal <span>Details</span></h2></center>
+                            <br></br>
+                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                                <Form.Label id="formlabel">First Name</Form.Label>
+                                <Form.Control type="text" placeholder='firstname' value={fname} onChange={(e)=>{setfname(e.target.value)}}/>
+                            </Form.Group>
+                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                                <Form.Label id="formlabel">Last Name</Form.Label>
+                                <Form.Control type="text" placeholder='lastname' value={lname} onChange={(e)=>{setlastname(e.target.value)}} />
+                            </Form.Group>
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">PhNumber</Form.Label>
+                                    <Form.Row>
+                                        <Col >
+                                            <Form.Control id="formlabel" plaintext readOnly defaultValue="+91" />
+                                        </Col>
+                                        <Col xs={10}>
+                                            <Form.Control type="text" placeholder='PhNO' value={phno} onChange={(e)=>setphno(e.target.value)}/>
+                                        </Col>
+                                    </Form.Row>
+                            </Form.Group>
+                            <Form.Group controlId='formBasicEmail'>
+                                <Form.Label id="formlabel">Email Address</Form.Label>
+                                <Form.Control type="email" placeholder='mailId' value={email} onChange={(e)=>setemail(e.target.value)} ></Form.Control>
+                            </Form.Group> 
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">Summary(Max 1000 char)</Form.Label>
+                                <Form.Control type="text" maxLength="1000" rows={5} value={summary} onChange={(e)=>setsummary(e.target.value)}></Form.Control>
+                            </Form.Group>
+                            <Button type="submit" variant="primary" onClick={update}>Edit</Button>
+                        </div>
+                    </Col>
+                    <Col md={6}>
+                        <div id="GoogleSDetails">
+                            <center><h2 id="featureHeader">Google <span>Scholar</span></h2></center>
+                            <br></br>
+                            <center>
+                            <Image src={gsimg} rounded/> </center>
+                            
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">Google Scholar ID</Form.Label>
+                                <Form.Control type="text" value={gsid} readOnly />
+                            </Form.Group>
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">Working At</Form.Label>
+                                <Form.Control type="text" value={gsprf_des} readOnly />
+                            </Form.Group>
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">Accomplished works</Form.Label>
+                                <Form.Control type="text" value={facwork} readOnly />
+                            </Form.Group>
+                            <Form.Group controlId="formPlaintextEmail">
+                                <Form.Label id="formlabel">Domains</Form.Label>
+                                <Form.Control as="textarea" rows={2} value={facdomain} readOnly />
+                            </Form.Group>    
+                        </div>        
+                    </Col>
+                    </Row>
+                    <br></br>
+                    <div id="GoogleSDetailsArticles">
+                        <center><h1>Articles</h1></center>
+                            {profilearticles.map((index) => (
+                                <Typography id="articleRow">
+                                    <div id="articlerowclosebutton" className="justify-content-end">
+                                        <Button variant="outline-danger" onClick={()=>deletegsarticle(index.gsarticleid)}><AiFillCloseSquare size='1.5em'/> Remove</Button>
+                                    </div>
+                                    <Form.Group as={Row} controlId="formPlaintextEmail">
+                                        <Form.Label id="labelProfilepage" column sm="2">Title</Form.Label>
+                                        <Col sm="8">
+                                        <Form.Control type="text" value={index.title}/>
+                                        </Col>
+                                    </Form.Group>
+                                    
+                                    {/* <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p> */}
+                                    <Row xs={6}>      
+                                    <Col><p id="ListOfFacultiesPara">Cite: <span>{index.cite}</span></p></Col>                     
+                                    <Col><p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p></Col>
+                                    </Row>  
+                                    <p id="ListOfFacultiesPara">Authors: <span>{index.authors}</span></p>
+                                    <hr />
+                                </Typography>
+                            ))}
+                            <div id="articleRow">
+                                <Pagination count={Math.ceil(articles.length/3)} onChange={paginationpagechange} variant="outlined" color="primary" large/>                        
+                            </div>
+                    </div>
                 </div>
             </div>
 

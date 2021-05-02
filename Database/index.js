@@ -2,8 +2,8 @@ const express=require('express');
 const app=express();
 const bodyParser=require('body-parser');
 const mysql=require('mysql');
-const request = require("request");// Simplify HTTP requests
-const cheerio = require('cheerio'); // Parse HTML)password
+const request = require("request");
+const cheerio = require('cheerio'); 
 const cors=require('cors');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json())
@@ -117,8 +117,8 @@ app.post('/api/update',(req,res)=>{
         console.log(result)
         res.send("Hello world")
     })
-
 })
+
 //update Password
 app.post('/api/updatePassword',(req,res)=>{
     
@@ -129,7 +129,6 @@ app.post('/api/updatePassword',(req,res)=>{
         console.log(result)
         res.send("Hello world")
     })
-
 })
 
 //delete user
@@ -160,6 +159,18 @@ app.post('/api/generate',(req,res)=>{
         }
         })
 })
+//get GSdetails for profile page
+app.post('/api/getgsdetailsgorprofile',(req,res)=>{
+    const mail=req.body.mail;
+    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_des,gsprofile.photo_url,COUNT(gsarticle.id) FROM gsprofile,user,gsarticle where user.email=? and user.id=gsprofile.id and user.id=gsarticle.id"
+    const stmt1="SELECT gswork.domain FROM user,gswork where user.email=? and user.id=gswork.id"
+    db.query(stmt,[mail],(err,result)=>{
+        db.query(stmt1,[mail],(err1,result1)=>{
+            res.send([result,result1])
+        })
+        
+    })
+})
 //get prf_name, domain
 app.post('/api/getForDropdown',(req,res)=>{
     const stmt="SELECT prf_name FROM gsprofile"
@@ -168,6 +179,14 @@ app.post('/api/getForDropdown',(req,res)=>{
         db.query(stmt1,(err1,result1)=>{
             res.send([result,result1]) 
         })
+    })
+})
+//update article
+app.post('/api/deletegsarticles',(req,res)=>{
+    const id=req.body.id;
+    const stmt="DELETE FROM gsarticle WHERE gsarticleid=?";
+    db.query(stmt,[id],(err,result)=>{
+        res.send("Success")
     })
 })
 
@@ -183,7 +202,6 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
             console.log(results)
             db.query(stmttwo,[id],(err2,resultss)=>{
                 console.log(resultss)
-                
                 let arr=[result,results,resultss]
                 console.log(arr[0])
                 res.send([result,results,resultss])
@@ -191,7 +209,14 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
         })
     })
 })
-
+//generate articles in profile
+app.post('/api/generatearticlesinprofile',(req,res)=>{
+    const mail=req.body.mail;
+    const stmt="SELECT gsarticle.gsarticleid,gsarticle.title,gsarticle.cite,gsarticle.year,gsarticle.authors from gsarticle,user where user.email=? and user.id=gsarticle.id"
+    db.query(stmt,[mail],(err,result)=>{
+        res.send(result)
+    })
+})
 app.post('/gs/generate', (req, res) => {
     const gsID=String(req.body.GS_ID);
     const userid=Number(req.body.userid);
