@@ -34,22 +34,33 @@ app.post('/api/register',(req,res)=>{
     const phno=req.body.phno;
     const userType=req.body.userType;
     const GS_ID=req.body.GS_ID;
+    var count=req.body.count;
+    console.log("count:"+count)
     const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber,Faculty,GS_ID) VALUES (?,?,?,?,?,?,?,?);";
+    const stmt2="INSERT INTO logtable (user_email,count) VALUES (?,?);";
+    
     db.query(stmt,[firstname,lastname,email,dob,pwd,phno,userType,GS_ID],(errs,result)=>{
         console.log(errs)
+        db.query(stmt2,[email,count],(errs1,result1)=>{
+            console.log(errs1)
+        })
         res.send("Hello world")
     })
-
+    
 })
 //Login check
 app.post('/api/login',(req,res)=>{
     const email=req.body.email;
     const pwd=req.body.pwd;
     const stmt="SELECT * FROM user WHERE email=? and pwd=?;";
+    const stmt1="UPDATE logtable SET count=count+1 where user_email=?";
     db.query(stmt,[email,pwd],(errs,result)=>{
         if(result.length>0)
         {
             res.send("Yes")
+            db.query(stmt1,[email],(errs1,result1)=>{
+                console.log(errs1)
+            })
         }
         else{
             res.send("no")
@@ -187,6 +198,44 @@ app.post('/api/deletegsarticles',(req,res)=>{
     const stmt="DELETE FROM gsarticle WHERE gsarticleid=?";
     db.query(stmt,[id],(err,result)=>{
         res.send("Success")
+    })
+})
+//check count of user login
+app.post("/api/showRating",(req,res)=>{
+    const email=req.body.email;
+    const stmt="SELECT count from logtable where user_email=?";
+    const stmt1="UPDATE logtable SET count=0 where user_email=?";
+    db.query(stmt,[email],(err,result)=>{
+        console.log("hello "+result,result[0]['count'])
+        if(result[0]['count']>=3){
+            console.log(result,result[0]['count'])
+            db.query(stmt1,[email],(err,result)=>{
+            })
+            res.send("Yes")
+         }
+         else{
+             res.send("No")
+         }
+    })
+    
+})
+//update Review
+app.post("/api/updatereview",(req,res)=>{
+    
+    const email=req.body.email;
+    const rating=req.body.rating;
+    const stmt="INSERT INTO reviews (user_email,rating) VALUES (?,?);";
+    db.query(stmt,[email,rating],(err,result)=>{
+
+    })
+})
+//submitreport
+app.post("/api/submit_report",(req,res)=>{
+    const email=req.body.email;
+    const report=req.body.report;
+    const stmt="INSERT INTO report (user_email,report_stated) VALUES (?,?);";
+    db.query(stmt,[email,report],(err,result)=>{
+
     })
 })
 

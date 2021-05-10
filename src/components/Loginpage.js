@@ -66,6 +66,7 @@ function Loginpage(){
         phno:phno,
         userType:Studentcheck?'N':'Y',
         GS_ID:urlParams.get('user'),
+        count:1,
     }).then(()=>{
         console.log(Studentcheck)
         history.push("/homepage/"+email)
@@ -105,8 +106,23 @@ function Loginpage(){
             const errorDivLogin=document.querySelector('.errorDivLogin')
             const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
+            console.log("e:"+email)
+            Axios.post("http://localhost:3001/api/showRating",{
+                email:email,
+                }).then((t)=>{
+                    console.log(t)
+                    if(t.data=="Yes"){
+                        //setShowrating(true);
+                        console.log("poi")
+                        history.push("/homepage/"+email+'/'+true)
+                    }
+                    else{
+                        history.push("/homepage/"+email+'/'+false)
+                    }
+                    
+                })
             console.log(l.data)
-        history.push("/homepage/"+email)
+        
         errorDiv.style.display='none'
         console.log(l);}
         else{

@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image} from 'react-bootstrap'
+import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup} from 'react-bootstrap'
 import './homepage.css'
 import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
@@ -7,15 +7,19 @@ import carousel1 from '../images/carousel1.jpeg'
 import carousel2 from '../images/carousel2.jpg'
 import {FaHome} from 'react-icons/fa'
 import {ImProfile} from 'react-icons/im'
-import {IoReturnUpBackSharp} from 'react-icons/io5'
+import {IoReturnUpBackSharp,IoSend} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
+import {FcFeedback} from 'react-icons/fc'
 import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Modal from "react-bootstrap/Modal"
 import Typography from '@material-ui/core/Typography';
 import Pagination from '@material-ui/lab/Pagination';
+import Rating from '@material-ui/lab/Rating';
+
+
 var historyArray=[];
 var userchoice=[]
 function searchdropdown() {
@@ -32,7 +36,7 @@ function searchdropdown() {
 }
 function Homepage(props) {
     let history=useHistory()
-    let {uname}=useParams()
+    let {uname,rating}=useParams()
     const [profilegenerate,setProfileGenerate]=useState('');
     const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
@@ -54,9 +58,20 @@ function Homepage(props) {
     var [changepageno,setchangepageno]=useState(0);
     var [student_or_faculty,setstudent_or_faculty]=useState('')
     var [paginationpageno,setpaginationpageno]=useState(1)
+    var [msgShow,setmsgShow]=useState(false)
     const [show, setShow] = useState(false);
+    var [reportstated,setreportstated]=useState('')
+    const [ratingshow, setShowrating] = useState(rating=='false'?false:true);
+    const [ratingvalue, setratingValue] = React.useState(0);
+    const [hoverrating, setHoverrating] = React.useState(-1);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const handleCloserating = () => setShowrating(false);
+    const handlemsgShow =() => setmsgShow(false)
+    
+    
+    
+
     
     searchdropdown()
     
@@ -286,6 +301,45 @@ function Homepage(props) {
         }
 
     }
+
+    function update_review(){
+        Axios.post("http://localhost:3001/api/updatereview",{
+            email:uname,
+            rating:ratingvalue,
+        })
+        setShowrating(false);
+    }
+    function formfeedbackShow_End(type){
+        const feedbackForm=document.querySelector('.feedbackForm')
+        const formfeed=document.querySelector('.formoffeedback')
+        if(type==='open'){
+            formfeed.style.backgroundColor='white'
+            formfeed.style.borderRadius='10px'
+            formfeed.style.padding='10px'
+            formfeed.style.display='block';
+        }
+        else{
+            // feedbackForm.style.backgroundColor='none'
+            // feedbackForm.style.borderRadius='0px'
+            formfeed.style.display='none';
+        }
+    }
+    function submitreport(){
+        if(reportstated!==''){
+            Axios.post("http://localhost:3001/api/submit_report",{
+                email:uname,
+                report:reportstated,
+            }).then((t)=>{
+                alert('Review Accepted')
+            })
+            setreportstated('')
+        }
+        else{
+            alert('No text')
+        }
+        formfeedbackShow_End('close')  
+    }
+
     return (
         
         <div>
@@ -360,7 +414,36 @@ function Homepage(props) {
                     </Carousel.Item>    
                 </Carousel>
                 <br></br>
-
+                <div className='feedbackForm'>
+                    <div className='feedbackicon'>
+                        <FcFeedback size='4em' onClick={()=>formfeedbackShow_End('open')}/>
+                    </div>
+                    <div className='formoffeedback'>
+                        <Button variant="outline-danger" onClick={()=>formfeedbackShow_End('close')}><AiFillCloseSquare size='1.5em' padding='0px'/></Button>
+                        <Form>
+                            <Form.Group controlId="formBasicEmail">
+                                <Form.Text className="text-muted">
+                                    Hi,
+                                </Form.Text>
+                                <Form.Text className="text-muted">
+                                    &emsp; We are here to help you have 
+                                </Form.Text>
+                                <Form.Text className="text-muted">
+                                    the best user experience.
+                                </Form.Text>  
+                            </Form.Group>
+                            <Form.Group controlId="formBasicEmail">
+                                <Form.Label>Your Review</Form.Label>
+                                <InputGroup className="mb-3">
+                                    <Form.Control type="text" aria-describedby="basic-addon1" onChange={(e)=>setreportstated(e.target.value)} />
+                                    <InputGroup.Prepend>
+                                        <Button variant="outline-secondary" type='reset' onClick={submitreport}><IoSend/></Button>
+                                    </InputGroup.Prepend>     
+                                </InputGroup>
+                            </Form.Group>
+                        </Form>
+                    </div>
+                </div>
                 <div id="WhyPB">
                     <h3 id="featureHeader">Why use <span>ProfileBuilder</span> ?</h3>    
                     <p>
@@ -537,15 +620,29 @@ function Homepage(props) {
                 </Modal.Footer>
             </Modal>
 
-            {/* <div className='deleteProfilePage'>
-                <Form.Group controlId="formPlaintext">
-                    <Form.Label id="formlabel">Click The button to delete account Permanently</Form.Label>
-                </Form.Group>
-                <Button type="submit" variant="primary" onClick={deleteProf}>
-                    delete
-                </Button>
-            </div> */}
-
+            <Modal show={ratingshow} onHide={handleCloserating} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                <Modal.Title>Rate Us Based on User Eperience</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <center><Rating
+                    mx="auto"
+                    name="hover-feedback"
+                    value={ratingvalue}
+                    precision={0.5}
+                    onChange={(event, newValue) => {
+                    setratingValue(newValue);
+                    }}
+                    onChangeActive={(event, newHover) => {
+                    setHoverrating(newHover);
+                    }}
+                /></center>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={update_review}>Submit</Button>
+                </Modal.Footer>
+            </Modal>
+            
             <div className='Generation'>
                 <div>
                     <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
