@@ -4,7 +4,7 @@
 .Details{
     margin:auto;
     margin-top: 40px;
-    width:30%;
+    width:70%;
 }
 
 #HomeLink{
@@ -246,4 +246,36 @@ border-radius: 5px;
   
   #autocompleteTextField label{
       color:azure;
+  }
+  #GoogleSDetails{
+      display:none;
+  }
+  #GoogleSDetailsArticles{
+      background-color: white;
+      display: none;
+  }
+  #labelProfilepage{
+      color:black;
+      font-style: italic;
+      font-weight: bold;
+  }
+  #articlerowclosebutton{
+      width:100%
+  }
+  #articleRow hr{
+      border:2px solid black
+  }
+  .feedbackForm{
+      position: fixed;
+      bottom: 10px;
+      right: 5px;
+      padding:10px;
+      /* border:3px solid white;
+      border-radius: 10px; */
+      z-index:1;
+  }
+  .formoffeedback{
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
   }
