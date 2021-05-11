@@ -13,7 +13,7 @@ const db=mysql.createConnection({
     port:3306,
     database:'sedb',
     user:'root',
-    password:'password'
+    password:'root'
 });
 db.connect(function (err) {
     if(err){
@@ -36,7 +36,6 @@ app.post('/api/register',(req,res)=>{
     const GS_ID=req.body.GS_ID;
     const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber,Faculty,GS_ID) VALUES (?,?,?,?,?,?,?,?);";
     db.query(stmt,[firstname,lastname,email,dob,pwd,phno,userType,GS_ID],(errs,result)=>{
-        console.log(errs)
         res.send("Hello world")
     })
 
@@ -60,7 +59,6 @@ app.post('/api/login',(req,res)=>{
 //get details for profile viewing and editing
 app.post('/api/getDetails',(req,res)=>{
     const email=req.body.email;
-    console.log(email)
     const stmt="SELECT * FROM user WHERE email=?;";
     db.query(stmt,[email],(errs,result)=>{
         res.send(result)
@@ -79,7 +77,6 @@ app.post('/api/insertFavorites',(req,res)=>{
     else{
         const stmt="INSERT INTO favorites (id,GS_ID) VALUES (?,?);";
         db.query(stmt,[id,gsid],(errs1,result1)=>{
-            console.log(errs1)
             res.send("No")
         })
     }
@@ -107,14 +104,12 @@ app.post('/api/favorites',(req,res)=>{
 //update user details
 app.post('/api/update',(req,res)=>{
     const firstname=req.body.firstname;
-    console.log(firstname)
     const lastname=req.body.lastname;
     const email=req.body.email;
     const phno=req.body.phno;
     const summary=req.body.summary;
     const stmt="UPDATE user SET firstname=?,lastname=?,email=?,phonenumber=?,summary=? WHERE email=?;";
     db.query(stmt,[firstname,lastname,email,phno,summary,email],(errs,result)=>{
-        console.log(result)
         res.send("Hello world")
     })
 
@@ -126,7 +121,6 @@ app.post('/api/updatePassword',(req,res)=>{
     const pwd=req.body.pwd;
     const stmt="UPDATE user SET password=? WHERE email=?;";
     db.query(stmt,[pwd,email],(errs,result)=>{
-        console.log(result)
         res.send("Hello world")
     })
 
@@ -135,10 +129,8 @@ app.post('/api/updatePassword',(req,res)=>{
 //delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;
-    console.log(emails);
     const stmt="DELETE FROM user WHERE email=?";
     db.query(stmt,[emails],(errs,result)=>{
-        console.log(result)
         res.send("Hello world")
     })
 })
@@ -147,11 +139,9 @@ app.post('/api/generate',(req,res)=>{
     const subject_name=req.body.subject_name;
     const stmt="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gswork,gsprofile where domain=? and gswork.id=gsprofile.id"
     db.query(stmt,[subject_name],(err,result)=>{
-        console.log(result)
         if(result.length==0){
             const stmt1="SELECT DISTINCT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM gswork,gsprofile where prf_name=? and gswork.id=gsprofile.id"
             db.query(stmt1,[subject_name],(err1,result1)=>{
-                console.log(result1)
                 res.send(result1)
             })
         }
@@ -178,14 +168,9 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
     const stmtone="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url,user.email,user.phonenumber FROM gsprofile,user where gsprofile.gs_id=? and user.id=gsprofile.id";
     const stmttwo="SELECT gsarticle.title,gsarticle.cite,gsarticle.year,gsarticle.authors from gsarticle,user where user.GS_ID=? and user.id=gsarticle.id"
     db.query(stmt,[id],(err,result)=>{
-        console.log(result)
         db.query(stmtone,[id],(err1,results)=>{
-            console.log(results)
             db.query(stmttwo,[id],(err2,resultss)=>{
-                console.log(resultss)
-                
                 let arr=[result,results,resultss]
-                console.log(arr[0])
                 res.send([result,results,resultss])
             })
         })
@@ -195,7 +180,6 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
 app.post('/gs/generate', (req, res) => {
     const gsID=String(req.body.GS_ID);
     const userid=Number(req.body.userid);
-    console.log(gsID)
     request.get({
       uri: 'https://scholar.google.co.uk/citations?user=' +  gsID,//+ "&sortby=pubdate",
       encoding: "binary"
@@ -243,6 +227,7 @@ app.post('/gs/generate', (req, res) => {
 app.get('/',(req,res)=>{
     res.send("frty")
 })
-app.listen(3001,()=>{
-    console.log("Connected to port 3001");
-})
+
+module.exports = app.listen(3001, function() {
+    console.log("Server Running at 3001");
+});
