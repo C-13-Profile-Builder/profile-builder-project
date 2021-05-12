@@ -55,12 +55,16 @@ app.post('/api/login',(req,res)=>{
     const stmt="SELECT * FROM user WHERE email=? and pwd=?;";
     const stmt1="UPDATE logtable SET count=count+1 where user_email=?";
     db.query(stmt,[email,pwd],(errs,result)=>{
-        if(result.length>0)
+        //console.log(email,pwd,result.length,result[0]['activate_acc'])
+        if(result.length>0 && result[0]['activate_acc']=='Y')
         {
             res.send("Yes")
             db.query(stmt1,[email],(errs1,result1)=>{
                 console.log(errs1)
             })
+        }
+        else if(result.length>0 && result[0]['activate_acc']=='N'){
+            res.send("activate")
         }
         else{
             res.send("no")
@@ -135,13 +139,31 @@ app.post('/api/updatePassword',(req,res)=>{
     
     const email=req.body.email;
     const pwd=req.body.pwd;
-    const stmt="UPDATE user SET password=? WHERE email=?;";
+    const stmt="UPDATE user SET pwd=? WHERE email=?;";
     db.query(stmt,[pwd,email],(errs,result)=>{
         console.log(result)
         res.send("Hello world")
     })
 })
-
+//activate_account
+app.post('/api/updateActivate_account',(req,res)=>{
+    const email=req.body.email;
+    const type=req.body.yes_no;
+    const stmt1="SELECT email from user WHERE email=?;";
+    const stmt="UPDATE user SET activate_acc=? WHERE email=?;";
+    db.query(stmt1,[email],(errs,result1)=>{
+        if(result1.length>=1){
+            db.query(stmt,[type,email],(errs,result)=>{
+                console.log(result)
+                res.send("yes")
+            })
+        }
+        else{
+            res.send("no")
+        }
+    })
+    
+})
 //delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;

@@ -33,7 +33,9 @@ function searchdropdown() {
         userchoice.push(t.data[1][i]['domain'])
     }
     })
+    
 }
+
 function Homepage(props) {
     let history=useHistory()
     let {uname,rating}=useParams()
@@ -68,7 +70,7 @@ function Homepage(props) {
     const handleShow = () => setShow(true);
     const handleCloserating = () => setShowrating(false);
     const handlemsgShow =() => setmsgShow(false)
-    
+    var [dropdownoptions,setdropdownoptions]=useState([])
     
     
 
@@ -76,6 +78,7 @@ function Homepage(props) {
     searchdropdown()
     
     
+
     function profile(NameClass){
         const name=document.querySelector('.'+NameClass)
         const profiles=document.querySelector('.Profile')
@@ -351,13 +354,14 @@ function Homepage(props) {
                     <Navbar.Collapse>
                         {/* <Form.Control type="text" placeholder="Search" className="mr-sm-2" onChange={(e)=>setProfileGenerate(e.target.value)}/> */}
                         <Autocomplete
-                        id="combo-box-demo"
-                        options={userchoice}
-                        getOptionLabel={(option) => option}
-                        onChange={(event, value) => setProfileGenerate(value)}
-                        style={{ width: 300,marginRight:20 , borderColor: '#ffffff'}}
-                        renderInput={(params) => <TextField {...params} 
-                        label="Search" variant="outlined" id="autocompleteTextField"/>}
+                            id="combo-box-demo"
+                            options={userchoice}
+                            getOptionLabel={(option) => option}
+                            onChange={(event, value) => setProfileGenerate(value)}
+                            
+                            style={{ width: 300,marginRight:20 , borderColor: '#ffffff'}}
+                            renderInput={(params) => <TextField {...params}
+                            label="Search" variant="outlined" id="autocompleteTextField"/>}
                         />
                         <Button variant="outline-success"  onClick={()=>ProfileGenerate("home")}>Search</Button>
                             
@@ -758,7 +762,6 @@ function Homepage(props) {
                         <br></br>
                         <br></br>
                 </div>
-
                 <div className="articles">
                 <div>
                     {articles.map((index) => (

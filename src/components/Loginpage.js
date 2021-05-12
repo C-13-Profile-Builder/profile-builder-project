@@ -1,5 +1,5 @@
 import React, { Component,useState } from 'react'
-import {Button,Navbar,Nav,Form,Col,Row} from 'react-bootstrap'
+import {Button,Navbar,Nav,Form,Col,Row,Modal} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
 import * as emailjs from 'emailjs-com'
@@ -10,6 +10,8 @@ var Errorstag=[]
 
 function Loginpage(){
     let history=useHistory()
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
     const [firstname,setfirstname]=useState('');
     const [lastname,setlastname]=useState('');
     const [dob,setdob]=useState('');
@@ -22,7 +24,9 @@ function Loginpage(){
     const [sendEmail,setsendEmail]=useState('');
     var [Studentcheck,setStudentcheck]=useState(false);
     var [Facultycheck,setFacultycheck]=useState(false);
-
+    var [forgotpasswordmsg,setforgotpasswordmsg]=useState('Enter the email address you have registerd with. We ll send you a link to reset your password.')
+    var [countoflogin,setcountoflogin]=useState(0)
+    var [loginerrorcheckmsg,setloginerrorcheckmsg]=useState('Credentials Provided are Incorrect')
    function register(e){
        console.log(GSurl)
        const urlParams = new URLSearchParams(GSurl);
@@ -69,7 +73,7 @@ function Loginpage(){
         count:1,
     }).then(()=>{
         console.log(Studentcheck)
-        history.push("/homepage/"+email)
+        history.push("/homepage/"+email+'/'+false)
         errorDiv.style.display='none'
         Axios.post('http://localhost:3001/api/getDetails',{
         email:email
@@ -118,20 +122,37 @@ function Loginpage(){
                     }
                     else{
                         history.push("/homepage/"+email+'/'+false)
-                    }
-                    
+                    }    
                 })
-            console.log(l.data)
-        
-        errorDiv.style.display='none'
-        console.log(l);}
-        else{
+                errorDiv.style.display='none'}
+        else if(l.data=="activate"){
+            console.log("hello avtivate")
+            setloginerrorcheckmsg("Activate Your Account By clicking the link in your mail")
             errorDiv.style.display='block';
             errorDivRegister.style.display='none'
             errorDivLogin.style.display='block'
         }
-    })
-}
+        else{
+            setloginerrorcheckmsg('Credentials Provided are Incorrect')
+            setcountoflogin(countoflogin+1)
+            errorDiv.style.display='block';
+            errorDivRegister.style.display='none'
+            errorDivLogin.style.display='block'
+        }
+        console.log("ght "+countoflogin)
+        if(countoflogin>=2){
+            Axios.post("http://localhost:3001/api/updateActivate_account",{
+                email:email,
+                yes_no:'N',
+                }).then((t)=>{
+                    if(t.data=='yes'){
+                        setShow(true)
+                    }
+                })
+            }
+        })
+        setcountoflogin(0)
+    }
 
     function display(type){
         const loginform=document.getElementById('LoginForm')
@@ -188,6 +209,7 @@ function Loginpage(){
             message:'http://localhost:3000/passwordChange/'+sendEmail,
             subject:'Password change request',
         }
+        setforgotpasswordmsg("Link for password change has been sent. Check your mail id")
         e.preventDefault();
         console.log(forgotpasswordemail['message']);
         emailjs.send(
@@ -215,7 +237,37 @@ function Loginpage(){
         const formnav=document.getElementById('formnav')
         formnav.style.display='block'
     }
-    
+    function activateAccount(e){
+        const tag1=document.querySelector('.errorInactivatemodal')
+        Axios.post("http://localhost:3001/api/getDetails",{
+            email:sendEmail,
+        }).then((t)=>{
+            console.log(t)
+            if(t.data.length>0){
+                var forgotpasswordemail={
+                    from_name:'mksroct2000@gmail.com',
+                    to_name:sendEmail,
+                    message:'http://localhost:3000/activate_account/'+sendEmail,
+                    subject:'Activate account',
+                }
+                e.preventDefault();
+                emailjs.send(
+                    'SE_Project_ProfileBuilde',
+                    'template_qg7xmi6',
+                     forgotpasswordemail,
+                    'user_1cNCZo5d7zPQ0cmjl3PEL'
+               )
+               setsendEmail('')
+               setShow(false)
+               tag1.style.display='none' 
+            }
+            else{
+                tag1.style.display='block' 
+            }
+        })
+        
+    }
+
         return (        
             <div id="bodyClass">
             <div className='LoginRegister'>
@@ -238,7 +290,7 @@ function Loginpage(){
                     <div className="errorDiv">
                         <br></br>
                         <div className="errorDivLogin">  
-                            <center><p><FaExclamation size="2em" id="errorDivIcon"/> Credentials Provided are Incorrect</p></center>
+                            <center><p><FaExclamation size="2em" id="errorDivIcon"/> {loginerrorcheckmsg}</p></center>
                         </div>
                         <div className="errorDivRegister">
                             {errors.map((index) => (
@@ -376,7 +428,7 @@ function Loginpage(){
                         <br></br>
                         <Form.Group>
                             <Form.Text className="text-mutedForgotPassword">
-                               <center> Enter the email address you have registerd with. We'll send you a link to reset your password.</center>
+                               <center>{forgotpasswordmsg}</center>
                             </Form.Text>
                         </Form.Group>
                     <br></br>
@@ -401,6 +453,27 @@ function Loginpage(){
                 </div>
                 
                 </div>
+                <Modal show={show} onHide={handleClose} animation={true} backdrop="static" keyboard={false}>
+                    <Modal.Header>
+                    <Modal.Title>Activate account after 2 Failed attempts</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className='errorInactivatemodal' style={{display:'none'}}>
+                            <center><h6><FaExclamation size='2em' id="errorDivIcon"/> EmailId Doesnt exist</h6></center>
+                        </div>
+
+                        <Form.Group controlId="formBasicEmail">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control type='email' placeholder='MailId' onChange={(e)=>setsendEmail(e.target.value)}/>       
+                            
+                        </Form.Group>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="primary" onClick={activateAccount}>
+                        Send Mail
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
                 {/* <div className="Homepage">
                     <Homepage username={email}>
 

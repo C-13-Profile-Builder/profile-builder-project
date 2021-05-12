@@ -4,6 +4,7 @@ import Homepage from './components/Homepage';
 import Changepwd from './components/Changepwd';
 import { Route, BrowserRouter,Switch } from 'react-router-dom';
 import './App.css';
+import Activateaccount from './components/Activateaccount';
 
 
 function App() {
@@ -13,7 +14,8 @@ function App() {
         <Switch>
           <Route exact path="/" component={Loginpage}/>
           <Route exact path="/homepage/:uname/:rating" component={Homepage}/>
-          <Route exact path="/passwordChange/:email" component={Changepwd}/>
+          <Route exact path="/passwordChange/:uname" component={Changepwd}/>
+          <Route exact path="/activate_account/:uname" component={Activateaccount}/>
           </Switch>
       </BrowserRouter>
     </div>
