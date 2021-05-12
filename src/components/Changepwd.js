@@ -10,14 +10,13 @@ import {useParams,useHistory} from 'react-router-dom'
 var newpwd=''
 var confirmnewpwd=''
 function Changepwd() {
-
-    function Updateusertable(e){
+    let {uname}=useParams()
+    function updateusertable(e){
         e.preventDefault();
-        let {emails}=useParams()
-        console.log(emails,newpwd,confirmnewpwd)
+        console.log(uname,newpwd,confirmnewpwd)
         if(newpwd===confirmnewpwd && newpwd!=''){
             Axios.post('http://localhost:3001/api/updatePassword',{
-                email:emails,
+                email:uname,
                 pwd:newpwd,
             }).then((res)=>{
                 alert("Password Updated")
@@ -40,7 +39,7 @@ function Changepwd() {
                     </Navbar>
                 </div>
             <div className='container'>
-                <Form id="Forgotform" onSubmit={Updateusertable}>
+                <Form id="Forgotform" onSubmit={updateusertable}>
                         <Form.Group id="header_Forgotpassword">
                             <center><h1>Password Change</h1></center>
                         </Form.Group>
