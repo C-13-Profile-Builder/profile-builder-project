@@ -300,6 +300,60 @@ app.get('/',(req,res)=>{
     res.send("frty")
 })
 
+app.post('/api/amrgenerate', (req, res)  => {
+    amrid=String(req.body.amrid);
+    uid=Number(req.body.userid);
+    const stmt="SELECT count(*) as count from amrprofile where uid=?";
+    db.query(stmt,[uid],(err,result)=>{
+        console.log(result,amrid,uid,req.body);
+          if (result[0]['count']>0){
+            db.query("delete from amrprofile where uid=?",[uid]);
+            db.query("delete from amrpub where uid=?",[uid]);
+          };
+    });
+    request.get({
+        uri: amrid,
+        encoding: "binary"
+      }, function (error, request, body) {
+        let $ = cheerio.load(body);
+        let publications=[];
+        let profile={
+          'prfphoto':$(".field-name-field-blog-image").find('img').attr('src'),
+          'prfname':$(".col-sm-12").find('h1').text().trim(),
+          'prfdesig':$("h5").find('.field-content').eq(0).text(),
+          'prfqual':$(".field-name-field-faculty-qualification").find('.field-items').text(),
+          'prfemail':$(".field-name-field-faculty-email").find('.field-items').text().trim(),
+          'prfsummary':$(".field-type-text-with-summary > .field-items > .field-item > p").text().trim() || $(".col-md-12 > p").text().trim(),
+          'prfresearch':$(".field-name-field-faculty-research-interest").find('.field-items').text().trim(),
+        };
+        $(".views-table").each(function(i,elem){
+          let type=$(this).find("caption").text().trim();
+          $(this).find("tbody").find("tr").each(function(i,elem){
+            let publication={
+              'type':type,
+              'year':Number($(this).find(".views-field-biblio-year > p").text().trim()),
+              'title':$(this).find(".views-field-title > p").text().trim(),
+            };
+            publications.push(publication)
+          });
+        });
+        profile['Publications']=publications;
+        console.log(profile);
+        const q1="INSERT INTO amrprofile (uid,amr_id,name,email,photo_url,designation,qualification,description,research) VALUES (?,?,?,?,?,?,?,?,?);";
+        db.query(q1,[uid,amrid,profile.prfname,profile.prfemail,profile.prfphoto,profile.prfdesig,profile.prfqual,profile.prfsummary,profile.prfresearch],(errs,result)=>{console.log(errs)})
+  
+        publications.forEach((elem)=>{
+          const q2="INSERT INTO amrpub (uid,type,title,year) VALUES (?,?,?,?);";
+          db.query(q2,[uid,elem.type,elem.title,elem.year],(errs,result2)=>{console.log(errs)})
+        });
+  
+        res.setHeader('Content-Type', 'application/json');
+        res.statusCode = 200;
+        res.end(JSON.stringify(profile)); 
+      });
+  
+  });
+
 module.exports = app.listen(3001, function() {
     console.log("Server Running at 3001");
 });
