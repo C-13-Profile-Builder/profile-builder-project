@@ -101,6 +101,7 @@ function Loginpage(){
     
     function Login(e){
         e.preventDefault();
+       
         Axios.post('http://localhost:3001/api/login',{
             email:email,
             pwd:pwd,
@@ -110,19 +111,27 @@ function Loginpage(){
             const errorDivLogin=document.querySelector('.errorDivLogin')
             const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
+
             console.log("e:"+email)
             Axios.post("http://localhost:3001/api/showRating",{
                 email:email,
                 }).then((t)=>{
                     console.log(t)
+                    
                     if(t.data=="Yes"){
+                        //document.cookie = expires + ";path=/homepage/:"+email+"/:"+true;
+                        //document.cookie = "username="+email+"; expires=Sat, 29 May 2021 15:48:00 UTC; path=/homepage/"+email+"/"+false+";";
                         //setShowrating(true);
-                        console.log("poi")
-                        history.push("/homepage/"+email+'/'+true)
+                        history.push("/homepage/"+email+'/'+true);
+                        console.log(document.cookie)
                     }
                     else{
-                        history.push("/homepage/"+email+'/'+false)
+                        //document.cookie = expires + ";path=/homepage/:"+email+"/:"+false;
+                        //document.cookie = "username="+email+"; expires=Sat, 29 May 2021 15:48:00 UTC; path=/homepage/"+email+"/"+false+";";
+                        history.push("/homepage/"+email+'/'+false);
+                        console.log(document.cookie)
                     }    
+                    
                 })
                 errorDiv.style.display='none'}
         else if(l.data=="activate"){

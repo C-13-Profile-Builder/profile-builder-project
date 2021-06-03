@@ -1,16 +1,17 @@
 import React,{useState} from 'react'
-import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup} from 'react-bootstrap'
+import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup,Link} from 'react-bootstrap'
 import './homepage.css'
 import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
 import carousel1 from '../images/carousel1.jpeg'
 import carousel2 from '../images/carousel2.jpg'
 import {FaHome} from 'react-icons/fa'
-import {ImProfile} from 'react-icons/im'
-import {IoReturnUpBackSharp,IoSend} from 'react-icons/io5'
+import {ImProfile,ImConnection} from 'react-icons/im'
+import {IoReturnUpBackSharp,IoSend,IoGlobe} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
 import {GiTeacher} from 'react-icons/gi'
 import {FcFeedback} from 'react-icons/fc'
+import {FaExclamation} from 'react-icons/fa'
 import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -18,6 +19,7 @@ import Modal from "react-bootstrap/Modal"
 import Typography from '@material-ui/core/Typography';
 import Pagination from '@material-ui/lab/Pagination';
 import Rating from '@material-ui/lab/Rating';
+
 
 
 var historyArray=[];
@@ -53,6 +55,7 @@ function Homepage(props) {
     var [profilearticles,setprofilearticles]=useState([])
     var [FavoriteFacultyProfile,setFavoriteFacultyProfile]=useState([])
     var [gsid,setgsid]=useState('');
+    var [userid,setuserid]=useState(0);
     var [gsprf_des,setgsprf_des]=useState('');
     var [gsimg,setgsimg]=useState('');
     var [facwork,setfacwork]=useState();
@@ -62,19 +65,27 @@ function Homepage(props) {
     var [paginationpageno,setpaginationpageno]=useState(1)
     var [msgShow,setmsgShow]=useState(false)
     const [show, setShow] = useState(false);
+    const [showprofileinnetworks, setshowprofileinnetworks] = useState(false);
     var [reportstated,setreportstated]=useState('')
+    var [connection_status,setconnection_status]=useState('Connect')
     const [ratingshow, setShowrating] = useState(rating=='false'?false:true);
     const [ratingvalue, setratingValue] = React.useState(0);
     const [hoverrating, setHoverrating] = React.useState(-1);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const handleCloserating = () => setShowrating(false);
+    const handleCloseprofileinnetworks =() => setshowprofileinnetworks(false);
     const handlemsgShow =() => setmsgShow(false)
     var [dropdownoptions,setdropdownoptions]=useState([])
-    
-    
-
-    
+    var [acceptedrequests,setacceptedrequests]=useState([])
+    var [waitingrequests,setwaitingrequests]=useState([])
+    var [deniedrequests,setdeniedrequests]=useState([])
+    var [studentCertificate,setstudentCertificate]=useState([])
+    var [saCourse,setsaCourse]=useState('')
+    var [saPlatform,setsaPlatform]=useState('')
+    var [saurl,setsaUrl]=useState('')
+    var [showStudAcheivements,setshowStudAcheivements]=useState([])
+    var [fullname,setfullname]=useState('')
     searchdropdown()
     
     
@@ -91,12 +102,15 @@ function Homepage(props) {
         Axios.post('http://localhost:3001/api/getDetails',{
             email:uname
         }).then((det)=>{
+            setuserid(det.data['0']['id'])
             setfname(det.data['0']['firstname'])
             setlastname(det.data['0']['lastname'])
             setemail(det.data['0']['email'])
             setphno(det.data['0']['phonenumber'])
             setsummary(det.data['0']['summary'])
             if(det.data['0']['Faculty']=='Y'){
+                const tag=document.querySelector('#addStudentAccomplishments');
+                tag.style.display='none';
                 setstudent_or_faculty('N')
                 faculty_or_not.style.display='block';
                 profilearticle.style.display='block'
@@ -115,19 +129,83 @@ function Homepage(props) {
                     setfacwork(result.data['0']['0']['COUNT(gsarticle.id)'])
                     setfacdomain(s.substring(1))
                 })
-                profilePagination(paginationpageno)
+                setpaginationpageno(1)
+                profilePagination(1)
 
             }
             else{
                 setstudent_or_faculty('Y')
+                Axios.post("http://localhost:3001/api/selectFromSA",{
+                    userid:det.data['0']['id'],
+                }).then((t)=>{
+                    console.log(t)
+                    console.log(t.data)
+                    setshowStudAcheivements(t.data)
+                    const tag=document.querySelector('#addStudentAccomplishments');
+                    tag.style.display='block';
+                })
                 faculty_or_not.style.display='none';
+                
             }
         })
     }
+    function delete_fromstudentsAccomplisments(id,course,platform,url){
+        console.log(id,course,platform,url)
+        Axios.post("http://localhost:3001/api/deleteFromSA",{
+            userid:id,
+            course:course,
+            platform:platform,
+            curl:url,
+        }).then((t)=>{
+            alert(t.data)
+            Axios.post("http://localhost:3001/api/selectFromSA",{
+                    userid:userid,
+                }).then((t)=>{
+                    setshowStudAcheivements(t.data)
+                    const tag=document.querySelector('#addStudentAccomplishments');
+                    tag.style.display='none';
+                    tag.style.display='block';
+                })
 
+        })
+    }
+    function addAccomplishments_articles(type){
+        if(type==='student'){
+            Axios.post("http://localhost:3001/api/insertIntoSA",{
+                userid:userid,
+                course:saCourse,
+                givenby:saPlatform,
+                url:saurl,
+            }).then((t1)=>{
+                alert(t1.data)
+                Axios.post("http://localhost:3001/api/selectFromSA",{
+                    userid:userid,
+                }).then((t)=>{
+                    setshowStudAcheivements(t.data)
+                    const tag=document.querySelector('#addStudentAccomplishments');
+                    tag.style.display='none';
+                    tag.style.display='block';
+                })
+            })
+        }
+        else{
+            console.log("Faculty....")
+            Axios.post("http://localhost:3001/api/insertintogsprofile",{
+                id:userid,
+                title:saCourse,
+                year:saPlatform,
+                authors:saurl,
+            }).then((t1)=>{
+                alert(t1.data)
+                profilePagination(paginationpageno)
+                profile('Profile')
+                
+            })
+        }
+    }
     const paginationpagechange=(event,value)=>{
         setpaginationpageno(value)
-        profilePagination(paginationpageno)
+        profilePagination(value)
     }
     function profilePagination(val){
         console.log(val)
@@ -155,6 +233,7 @@ function Homepage(props) {
             if(t.data=="Success"){
                 alert("Delete Succcessful")
                 profilePagination(paginationpageno)
+                profile('Profile')
             }
             else{
                 alert("Delete failed")
@@ -232,7 +311,31 @@ function Homepage(props) {
             setarticles(res.data['2'])
             console.log(articles)
         })
+
+        Axios.post("http://localhost:3001/api/getDetails",{
+                email:uname,
+            }).then((t)=>{
+                Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
+                    gsid:gsid,
+                    }).then((t1)=>{
+                        Axios.post("http://localhost:3001/api/getDetailsfromconnectrequest",{
+                            fromid:t.data[0]['id'],
+                            toid:t1.data[0]['id'],
+                            }).then((t2)=>{
+                                if(t2.data.length>0)
+                                {
+                                    if(t2.data[0]['status']==='W'){
+                                    setconnection_status('Awaiting Reply')
+                                    }
+                                    else if(t2.data[0]['status']==='A'){
+                                    setconnection_status('Accepted')
+                                    }
+                                }
+                            })
+                    })
+            })
     }
+    
     
 
     function AddToFavorites(gs_id){
@@ -343,6 +446,221 @@ function Homepage(props) {
         formfeedbackShow_End('close')  
     }
 
+    function connectwith(togsid){
+        if(connection_status==='Connect'){
+            Axios.post("http://localhost:3001/api/getDetails",{
+                email:uname,
+            }).then((t)=>{
+                Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
+                    gsid:togsid,
+                    }).then((t1)=>{
+                        Axios.post("http://localhost:3001/api/connectrequest",{
+                            fromid:t.data[0]['id'],
+                            toid:t1.data[0]['id'],
+                            }).then((t2)=>{
+                                if(t2.data=='success'){
+                                alert("inserted")
+                                setconnection_status('Awaiting Reply')}
+                            })
+                    })
+            })
+        }
+    }
+
+    function shownetwork(){
+        const shnet=document.querySelector('.ShowNetwork')
+        shnet.style.display='block'
+        const home=document.querySelector('.home')
+        home.style.display='none'
+        historyArray.push('home')
+        Axios.post("http://localhost:3001/api/getDetails",{
+                email:uname,
+            }).then((t)=>{
+                if(t.data[0]['Faculty']==='N'){
+                    const onlyForstudent=document.querySelector('#onlyForstudent')
+                    onlyForstudent.style.display='block'
+                    Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                    fromid:t.data[0]['id'],
+                    status:'W',
+                    }).then((t1)=>{
+                        var arr=[]
+                        for(var i=0;i<t1.data.length;i++){
+                            arr.push(t1.data[i]['to_id'])
+                        }
+                        
+                            Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                            id:arr,
+                            }).then((t2)=>{
+                                const wrt=document.querySelector('#Waiting_requests_there');
+                                const rt=document.querySelector('#Waiting_requests')
+                                const frt=document.querySelector('#Waiting_requests_there_faculty')
+                                frt.style.display='none'
+                                if(t2.data.length>0){
+                                    setwaitingrequests(t2.data)
+                                    wrt.style.display='block'
+                                    rt.style.display='none'
+                                    
+                                }
+                                else{
+                                    wrt.style.display='none'
+                                    rt.style.display='block'
+                                }
+                            })
+                        
+                    })
+                    Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                fromid:t.data[0]['id'],
+                status:'A',
+                }).then((t1)=>{
+                    var arr=[]
+                    for(var i=0;i<t1.data.length;i++){
+                        arr.push(t1.data[i]['to_id'])
+                    }
+                    Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                    id:arr,
+                    }).then((t2)=>{
+                        const art=document.querySelector('#Accepted_requests_there');
+                        const rt=document.querySelector('#Accepted_requests')
+                        if(t2.data.length>0){
+                            setacceptedrequests(t2.data)
+                            art.style.display='block'
+                            rt.style.display='none'
+                        }
+                        else{
+                            art.style.display='none'
+                            rt.style.display='block'
+                        }
+                    })
+                })
+
+                Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                fromid:t.data[0]['id'],
+                status:'D',
+                }).then((t1)=>{
+                    var arr=[]
+                    for(var i=0;i<t1.data.length;i++){
+                        arr.push(t1.data[i]['to_id'])
+                    }
+                    Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                    id:arr,
+                    }).then((t2)=>{
+                        const drt=document.querySelector('#Denied_requests_there');
+                        const rt=document.querySelector('#Denied_requests')
+                        if(t2.data.length>0){
+                            setdeniedrequests(t2.data)
+                            drt.style.display='block'
+                            rt.style.display='none'
+                        }
+                        else{
+                            drt.style.display='none'
+                            rt.style.display='block'
+                        }
+                    })
+                })
+            
+                }
+                else{
+                    const onlyForstudent=document.querySelector('#onlyForstudent')
+                    onlyForstudent.style.display='none'
+                    Axios.post("http://localhost:3001/api/getnetworkdetailstorequest",{
+                    toid:t.data[0]['id'],
+                    status:'W',
+                    }).then((t1)=>{
+                        var arr=[]
+                        for(var i=0;i<t1.data.length;i++){
+                            arr.push(t1.data[i]['from_id'])
+                        }
+                            Axios.post("http://localhost:3001/api/selectfromuserfornetworkdetails",{
+                            id:arr,
+                            }).then((t2)=>{
+                                //console.log(t2.data)
+                                const wrt=document.querySelector('#Waiting_requests_there');
+                                const rt=document.querySelector('#Waiting_requests')
+                                const frt=document.querySelector('#Waiting_requests_there_faculty')
+                                wrt.style.display='none'
+                                if(t2.data.length>0){
+                                    setwaitingrequests(t2.data)
+                                    frt.style.display='block'
+                                    rt.style.display='none'
+                                }
+                                else{
+                                    frt.style.display='none'
+                                    rt.style.display='block'
+                                }
+                            })
+                        
+                    })
+
+                    Axios.post("http://localhost:3001/api/getnetworkdetailstorequest",{
+                    toid:t.data[0]['id'],
+                    status:'A',
+                    }).then((t1)=>{
+                        var arr=[]
+                        for(var i=0;i<t1.data.length;i++){
+                            arr.push(t1.data[i]['from_id'])
+                        }
+                        
+                            Axios.post("http://localhost:3001/api/selectfromuserfornetworkdetails",{
+                            id:arr,
+                            }).then((t2)=>{
+                                //console.log(t2.data)
+                                const art=document.querySelector('#Accepted_requests_there');
+                                const rt=document.querySelector('#Accepted_requests')
+                                const artf=document.querySelector('#Accepted_requests_there_faculty')
+                                if(t2.data.length>0){
+                                    setacceptedrequests(t2.data)
+                                    artf.style.display='block'
+                                    art.style.display='none'
+                                    rt.style.display='none'
+                                }
+                                else{
+                                    artf.style.display='none'
+                                    art.style.display='none'
+                                    rt.style.display='block'
+                                }
+                            })
+                    })
+
+                    
+                }
+            })
+    }
+    function studentProfile(usid,name){
+        
+        Axios.post("http://localhost:3001/api/selectFromSA",{
+            userid:usid,
+        }).then((t)=>{
+            console.log(t)
+            setfullname(name)
+            setstudentCertificate(t.data)
+            setshowprofileinnetworks(true)
+        })
+    }
+    function changeRequeststatus(type,fromid){
+        Axios.post("http://localhost:3001/api/getDetails",{
+            email:uname
+        }).then((t)=>{
+            if(type=='Ignore'){
+                Axios.post("http://localhost:3001/api/updateRequestTable",{
+                    toid:t.data[0]['id'],
+                    fromid:fromid,
+                    status:'D',
+                }).then((t1)=>{
+                    alert('Updated')
+                })
+            }
+            else{
+                Axios.post("http://localhost:3001/api/updateRequestTable",{
+                    toid:t.data[0]['id'],
+                    fromid:fromid,
+                    status:'A',
+                }).then((t2)=>{
+                    alert('Updated')
+                })
+            }
+        })
+        
+    }
     return (
         
         <div>
@@ -368,7 +686,8 @@ function Homepage(props) {
                         
                     </Navbar.Collapse>
                     <Navbar.Collapse className="justify-content-end">
-                        <Nav.Link href="#link" id="HomeLink"><FaHome size='1.5em'/> HOME</Nav.Link>
+                        <Nav.Link href="" id="HomeLink"><FaHome size='1.5em'/> HOME</Nav.Link>
+                        <Nav.Link href="" id="HomeLink" onClick={shownetwork}><IoGlobe size='1.5em'/> NETWORKS</Nav.Link>
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                             <NavDropdown.Item onClick={()=>profile("home")} >Profile</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>DisplayFavorites("home")}>Favorites</NavDropdown.Item>
@@ -499,6 +818,156 @@ function Homepage(props) {
                     </footer>
                 </div>
             </div>
+            <div className='ShowNetwork'>
+                <div>
+                    <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
+                        <Navbar.Brand><ImProfile size='2em'/> Profile_Builder</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                        <Navbar.Collapse className="justify-content-end">
+                        <Nav.Link id="HomeLink" onClick={()=>goBack("ShowNetwork")}><IoReturnUpBackSharp size="1.5em"/>  GO BACK</Nav.Link>
+                        <Nav.Link onClick={()=>GotoHome("ShowNetwork")} id="HomeLink"><FaHome size="1.5em"/>  HOME</Nav.Link>
+                            <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
+                                <NavDropdown.Item onClick={()=>DisplayFavorites("ShowNetwork")}>Favorites</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
+                            </NavDropdown>  
+                        </Navbar.Collapse>
+                    </Navbar>
+                    <div className='Network_Details'>
+                        <center><h2>CONNECTED TO</h2></center>
+                        <div id='Accepted_requests_there'>
+                            {acceptedrequests.map((index)=>(
+                                <li style={{color:'orange'}}>
+                                    <p style={{fontSize:'large',fontWeight:'bolder',color:'whitesmoke'}}>{index.prf_name}</p>
+                                    <p style={{fontSize:'medium',fontWeight:'light',color:'whitesmoke'}}>{index.prf_des}</p>
+                                </li>
+                            ))}
+                        </div>
+                        <div id='Accepted_requests'>
+                            <center><p style={{fontSize:'x-large',fontWeight:'bolder',color:'whitesmoke'}}><FaExclamation size="1em" id="errorDivIcon"/> NO CONNECTIONS</p></center>
+                        </div>
+                        <div id='Accepted_requests_there_faculty'>
+                            {acceptedrequests.map((index)=>(
+                                <div>
+                                    <li style={{color:'orange'}}>
+                                        <Row>
+                                            <Col md={6}>
+                                                <a id="networkA" onClick={()=>studentProfile(index.id,index.firstname+' '+index.lastname)} href='#' style={{fontSize:'large',fontWeight:'bolder',color:'#b2d0ec'}}>{index.firstname} {index.lastname}</a>
+                                            </Col>
+                                        </Row>
+                                    </li>
+                                </div>
+                            ))}
+                        </div>
+                        <hr className='mt-5'/>
+                        <center><h2>AWAITING REPLY FROM</h2></center>
+                        <div id='Waiting_requests_there'>
+                            {waitingrequests.map((index)=>(
+                                <li style={{color:'orange'}}>
+                                    <p style={{fontSize:'large',fontWeight:'bolder',color:'whitesmoke'}}>{index.prf_name}</p>
+                                    <p style={{fontSize:'medium',fontWeight:'light',color:'whitesmoke'}}>{index.prf_des}</p>
+                                </li>
+                            ))}
+                        </div>
+                        <div id='Waiting_requests_there_faculty'>
+                            {waitingrequests.map((index)=>(
+                                <div>
+                                    <li style={{color:'orange'}}>
+                                        <Row>
+                                            <Col md={6}>
+                                                <a id='networkA' onClick={()=>studentProfile(index.id,index.firstname+' '+index.lastname)} href='#' style={{fontSize:'large',fontWeight:'bolder',color:'#b2d0ec'}}>{index.firstname} {index.lastname}</a>
+                                            </Col>
+                                            <Col md={6}>
+                                                <Button type='submit' variant='outline-primary' onClick={()=>changeRequeststatus('Ignore',index.id)} inline>
+                                                    Ignore
+                                                </Button>
+                                                <Button type='submit' variant='outline-primary' onClick={()=>changeRequeststatus('Accept',index.id)} style={{marginLeft:'10px'}}>
+                                                    Accept
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </li>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div id='Waiting_requests'>
+                            <center><p style={{fontSize:'x-large',fontWeight:'bolder',color:'whitesmoke'}}><FaExclamation size="1em" id="errorDivIcon"/> NO AWAITING REQUESTS</p></center>
+                        </div>
+                        <hr className='mt-5'/>
+                        
+                        <div id="onlyForstudent">
+                            <center><h2>DENIED REQUESTS</h2></center>
+                            <div id='Denied_requests_there'>
+                                {deniedrequests.map((index)=>(
+                                    <li style={{color:'orange'}}>
+                                        <p style={{fontSize:'large',fontWeight:'bolder',color:'whitesmoke'}}>{index.prf_name}</p>
+                                        <p style={{fontSize:'medium',fontWeight:'light',color:'whitesmoke'}}>{index.prf_des}</p>
+                                    </li>
+                                ))}
+                            </div>
+                            <div id='Denied_requests'>
+                                <center><p style={{fontSize:'x-large',fontWeight:'bolder',color:'whitesmoke'}}><FaExclamation size="1em" id="errorDivIcon"/> NO REQUESTS DENIED</p></center>
+                            </div>
+                        </div>
+                        <hr className='mt-5'/>
+                    </div>
+                </div>
+
+            </div>
+            <Modal show={showprofileinnetworks} onHide={handleCloseprofileinnetworks} animation={true}>
+                <Modal.Header closeButton>
+                
+                </Modal.Header>
+                <Modal.Body>
+                <center><h3 style={{textDecoration:'underline'}}text>Profile</h3></center>
+                    <Form>
+                                <center><Form.Group as={Row} controlId="formPlaintextEmail">
+                                    <Form.Label column sm="6" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>
+                                        Name
+                                    </Form.Label>
+                                    <Col sm="6">
+                                        <Form.Control plaintext readOnly value={fullname} />
+                                    </Col>
+                                </Form.Group></center>
+                                <center><h3 style={{textDecoration:'underline'}}>Acheivements</h3></center>
+                                {studentCertificate.map((index) => (
+                                    <center><Form>
+                                        <Form.Group as={Row} controlId="formPlaintextEmail">
+                                            <Form.Label column sm="6" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>
+                                                Course
+                                            </Form.Label>
+                                            <Col sm="6">
+                                                <Form.Control plaintext readOnly value={index.course} />
+                                            </Col>
+                                        </Form.Group>
+                                        <Form.Group as={Row} controlId="formPlaintextEmail">
+                                            <Form.Label column sm="6" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>
+                                                CertifiedBy
+                                            </Form.Label>
+                                            <Col sm="6">
+                                                <Form.Control plaintext readOnly value={index.platform}/>
+                                            </Col>
+                                        </Form.Group>
+                                        <Form.Group as={Row} controlId="formPlaintextEmail">
+                                            <Form.Label column sm="12" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>
+                                                URL
+                                            </Form.Label>
+                                            <Col sm="12">
+                                                <a href={index.certificate_link}>{index.certificate_link}</a>
+                                            </Col>
+                                        </Form.Group>
+                                        <hr></hr>
+                                    </Form></center>
+                                    
+                                ))}
+
+                            </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                
+                </Modal.Footer>
+            </Modal>
 
             <div className='Profile'>
                 <div>
@@ -579,12 +1048,93 @@ function Homepage(props) {
                     </Col>
                     </Row>
                     <br></br>
+                    <div id="addStudentAccomplishments">
+                        <div id="getcertificateofstudentinprofile">
+                            <center><h3><span style={{color:'black',fontWeight:'bolder'}}>ADD</span> <span style={{color:'#e3a026',fontWeight:'bolder'}}>ACCOMPLISMENTS</span></h3></center>
+                            <Form>
+                                <Form.Group controlId="formBasicEmail">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>Course</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaCourse(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group controlId="formBasicPassword">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>GivenBy</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaPlatform(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group controlId="formBasicPassword">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>Certificate Google drive URL</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaUrl(e.target.value)}/>
+                                </Form.Group>
+                                <Row className='justify-content-end'>
+                                    <Button variant="primary" type="reset" onClick={()=>addAccomplishments_articles('student')}>ADD</Button>
+                                </Row>
+                            </Form>
+                        </div>
+                        <hr></hr>
+                        <div id="showstudentAcheivements">
+                            <center><h3 style={{color:'black',fontWeight:'bolder'}}>ACHEIVEMENTS</h3></center>
+                            {showStudAcheivements.map((index)=>(
+                                <Form>
+                                    <Row>
+                                            <Col xs={2}>
+                                            </Col>
+                                            <Col xs={10}>
+                                                <Row>
+                                                    <Col xs={7}>
+                                                        <Form.Group as={Row} style={{marginBottom:'0px'}}>
+                                                            <Form.Label column sm="3" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>Name</Form.Label>
+                                                            <Col sm={8}>
+                                                                <Form.Control plaintext readOnly value={index.course} />
+                                                            </Col>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col xs={5}>
+                                                        <Button variant='primary' onClick={()=>delete_fromstudentsAccomplisments(index.user_id,index.course,index.platform,index.certificate_link)}><AiFillCloseSquare size='1em'/> Remove</Button>
+                                                    </Col>
+                                                </Row>
+                                                <Form.Group as={Row} style={{marginBottom:'0px'}}>
+                                                    <Form.Label column sm="3" style={{color:'#e3a026',fontSize:'medium',fontWeight:'bold'}}>Acknowledged By</Form.Label>
+                                                    <Col sm={8}>
+                                                        <Form.Control plaintext readOnly value={index.platform} />
+                                                    </Col>
+                                                </Form.Group>
+                                                <Form.Group>
+                                                    <a href={index.certificate_link}>{index.certificate_link}</a>
+                                                </Form.Group>
+                                            </Col>
+                                    </Row>
+                                    
+                                </Form>
+                                
+                            ))}
+                        </div>
+
+                    </div>
                     <div id="GoogleSDetailsArticles">
+                        <div id="getcertificateofstudentinprofile">
+                            <center><h3><span style={{color:'black',fontWeight:'bolder'}}>ADD </span> <span style={{color:'#e3a026',fontWeight:'bolder'}}>ARTICLES</span></h3></center>
+                            <Form>
+                                <Form.Group controlId="formBasicEmail">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>Title</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaCourse(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group controlId="formBasicPassword">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>Year</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaPlatform(e.target.value)}/>
+                                </Form.Group>
+                                <Form.Group controlId="formBasicPassword">
+                                    <Form.Label style={{fontStyle:'italic',fontWeight:'bold'}}>Co-Authors</Form.Label>
+                                    <Form.Control type="text" onChange={(e)=>setsaUrl(e.target.value)}/>
+                                </Form.Group>
+                                <Row className='justify-content-end'>
+                                    <Button variant="primary" type="reset" onClick={()=>addAccomplishments_articles('faculty')}>ADD</Button>
+                                </Row>
+                            </Form>
+                        </div>
                         <center><h1>Articles</h1></center>
                             {profilearticles.map((index) => (
                                 <Typography id="articleRow">
                                     <div id="articlerowclosebutton" className="justify-content-end">
-                                        <Button variant="outline-danger" onClick={()=>deletegsarticle(index.gsarticleid)}><AiFillCloseSquare size='1.5em'/> Remove</Button>
+                                        <Button variant="outline-danger" type="submit" onClick={()=>deletegsarticle(index.gsarticleid)}><AiFillCloseSquare size='1.5em'/> Remove</Button>
                                     </div>
                                     <Form.Group as={Row} controlId="formPlaintextEmail">
                                         <Form.Label id="labelProfilepage" column sm="2">Title</Form.Label>
@@ -718,6 +1268,7 @@ function Homepage(props) {
                             {IndividualProfile.map((index) => (
                                 <div id="ListOfFacultiesRow">
                                 <Row className="justify-content-end" id="IndividualFacultyProfileButton">
+                                    <Button variant="outline-dark" onClick={()=>connectwith(index.gs_id)} id="popup" style={{marginRight:'10px'}}><ImConnection/> {connection_status}</Button>
                                     <Button variant="outline-dark" onClick={()=>AddToFavorites(index.gs_id)} id="popup"><AiOutlineStar/> Favorites<span className="popuptext" id="myPopup">Already In Favorites!</span></Button>
                                 </Row>
                                 <Row >

@@ -8,6 +8,7 @@ import Activateaccount from './components/Activateaccount';
 
 
 function App() {
+  console.log(document.cookie)
   return (
     <div>
       <BrowserRouter>

@@ -133,7 +133,87 @@ app.post('/api/update',(req,res)=>{
         res.send("Hello world")
     })
 })
-
+//select userid from gsprofile
+app.post('/api/getDetailsfromgsprofile',(req,res)=>{
+    const gsid=req.body.gsid;
+    const stmt="SELECT id FROM gsprofile WHERE gs_id=?";
+    db.query(stmt,[gsid],(err,result)=>{
+        res.send(result)
+        console.log(result)
+    })
+})
+//connect_request
+app.post('/api/connectrequest',(req,res)=>{
+    const fromid=req.body.fromid;
+    const toid=req.body.toid;
+    const stmt="INSERT INTO connect_request (from_id,to_id,status) VALUES (?,?,?)";
+    db.query(stmt,[fromid,toid,'W'],(err,result)=>{
+        console.log(err)
+        if(err==null){
+        res.send("success")}
+    })
+})
+//getDetailsfromconnectrequest
+app.post('/api/getDetailsfromconnectrequest',(req,res)=>{
+    const fromid=req.body.fromid;
+    const toid=req.body.toid;
+    const stmt="SELECT * FROM connect_request WHERE from_id=? and to_id=?";
+    db.query(stmt,[fromid,toid],(err,result)=>{
+        if(err==null){
+        res.send(result)}
+    })
+})
+//getnetworkdetailsfromrequest
+app.post('/api/getnetworkdetailsfromrequest',(req,res)=>{
+    const fromid=req.body.fromid;
+    const status=req.body.status;
+    console.log(status)
+    console.log(fromid)
+    const stmt="SELECT to_id FROM connect_request WHERE from_id=? and status=?";
+    db.query(stmt,[fromid,status],(err,result)=>{
+        console.log(err,result)
+        if(err==null){
+        res.send(result)}
+    })
+})
+//selct from gsprofile for networkdetails
+app.post('/api/selectfromgsprofilefornetworkdetails',(req,res)=>{
+    const id=req.body.id;
+    console.log("frty "+id)
+    // for(var i=0;i<id.length;i++){
+        const stmt="SELECT * FROM gsprofile WHERE id IN (?);";
+        db.query(stmt,[id],(err,result)=>{
+        // console.log(result,err)
+        //console.log(result)
+        res.send(result)
+    })
+    //}
+})
+//get network details to request
+app.post('/api/getnetworkdetailstorequest',(req,res)=>{
+    const toid=req.body.toid;
+    const status=req.body.status;
+    console.log(status)
+    console.log(toid)
+    const stmt="SELECT from_id FROM connect_request WHERE to_id=? and status=?";
+    db.query(stmt,[toid,status],(err,result)=>{
+        console.log(err,result)
+        if(err==null){
+        res.send(result)}
+    })
+})
+//selct from gsprofile for user
+app.post('/api/selectfromuserfornetworkdetails',(req,res)=>{
+    const id=req.body.id;
+    console.log("frty "+id)
+    // for(var i=0;i<id.length;i++){
+        const stmt="SELECT * FROM user WHERE id IN (?);";
+        db.query(stmt,[id],(err,result)=>{
+        // console.log(result,err)
+        res.send(result)
+    })
+    //}
+})
 //update Password
 app.post('/api/updatePassword',(req,res)=>{
     
@@ -260,7 +340,16 @@ app.post("/api/submit_report",(req,res)=>{
 
     })
 })
-
+//update request table
+app.post('/api/updateRequestTable',(req,res)=>{
+    const fromid=req.body.fromid;
+    const toid=req.body.toid;
+    const status=req.body.status;
+    const stmt="UPDATE connect_request set status=? where from_id=? and to_id=?"
+    db.query(stmt,[status,fromid,toid],(errs,result)=>{
+        res.send("updated")
+    })
+})
 //generate all details of a faculty
 app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
     const id=req.body.gsid;
@@ -280,6 +369,77 @@ app.post('/api/generateallarticleOfAFaculty',(req,res)=>{
         })
     })
 })
+//insert into studentaccomplishment_Table
+app.post('/api/insertIntoSA',(req,res)=>{
+    const userid=req.body.userid;
+    const course=req.body.course;
+    const platform=req.body.givenby;
+    const curl=req.body.url;
+    const stmt="INSERT INTO students_accomplishments (user_id,course,platform,certificate_link) VALUES(?,?,?,?);";
+    db.query(stmt,[userid,course,platform,curl],(errs,result)=>{
+        console.log(errs)
+        if(errs==null)
+        {
+            res.send("Success")
+        }
+        else{
+            res.send("fail")
+        }
+    })
+})
+//select from StudentAcheivements
+app.post('/api/deleteFromSA',(req,res)=>{
+    const userid=req.body.userid;
+    const course=req.body.course;
+    const platform=req.body.platform;
+    const curl=req.body.curl;
+    
+    const stmt="DELETE FROM students_accomplishments WHERE user_id=? and course=? and platform=? and certificate_link=?;";
+    db.query(stmt,[userid,course,platform,curl],(errs,result)=>{
+        console.log(result)
+        if(errs==null)
+        {
+            res.send("success")
+        }
+        else{
+            res.send('fail')
+        }
+    })
+})
+//Insert gsprofiles
+app.post('/api/insertintogsprofile',(req,res)=>{
+    console.log("hello")
+    const id=req.body.id;
+    const year=req.body.year;
+    const title=req.body.title;
+    const authors=req.body.authors;
+    console.log(id,year,title,authors)
+    const stmt="INSERT INTO gsarticle (id,title,year,authors) VALUES (?,?,?,?);";
+    db.query(stmt,[id,title,year,authors],(errs,result)=>{
+        console.log(result,errs)
+        if(errs!=null){
+            res.send("fail")
+        }
+        else{
+            res.send("success")
+        }
+    })
+})
+//delete from StudentAcheivements
+app.post('/api/selectFromSA',(req,res)=>{
+    const userid=req.body.userid;
+    
+    const stmt="SELECT * FROM students_accomplishments WHERE user_id=?;";
+    db.query(stmt,[userid],(errs,result)=>{
+        
+        if(errs==null)
+        {
+            res.send(result)
+        }
+        
+    })
+})
+
 //generate articles in profile
 app.post('/api/generatearticlesinprofile',(req,res)=>{
     const mail=req.body.mail;

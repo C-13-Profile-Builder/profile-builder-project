@@ -187,6 +187,7 @@ border-radius: 5px;
 #IndividualFacultyProfileButton{
     margin: auto;
     width:90%;
+    margin-bottom: 10px;
 }
 .displayFavorites{
     display:none;
@@ -279,3 +280,70 @@ border-radius: 5px;
       padding: 10px;
       border-radius: 10px;
   }
+  .ShowNetwork{
+      display:none;
+      
+  }
+  .Network_Details{
+      margin: auto;
+    width:60%;
+  }
+    #Accepted_requests_there,#Accepted_requests,#Accepted_requests_there_faculty{
+        display:none;
+    margin: auto;
+    width: 70%;
+    margin-bottom: 30px;
+    height:30%;
+    
+  }
+  #Denied_requests_there,#Denied_requests{
+    display:none;
+    margin: auto;
+    width: 70%;
+    margin-bottom: 30px;
+    height:30%;
+    
+  }
+  #Waiting_requests_there,#Waiting_requests,#Waiting_requests_there_faculty{
+    display:none;
+    margin: auto;
+    width: 70%;
+    margin-bottom: 30px;
+    height:30%;
+    
+  }
+
+  .Network_Details h2{
+    margin-bottom: 20px;
+      padding: 10px;
+      color:white;
+      background-color: #0FF1CE;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+  }
+  #networkA:hover{
+    font-size: xx-large;
+    color:'white';
+  }
+  #addStudentAccomplishments{
+      display:none;
+      width:80%;
+      margin:auto;
+      margin-top: 30px;
+      margin-bottom: 30px;
+      background-color: white;
+      border-radius: 20px;
+  }
+  #getcertificateofstudentinprofile{
+      width:50%;
+      margin:auto;
+      padding:20px;
+      margin-top: 20px;
+  }
+  #showstudentAcheivements{
+    width:100%;
+    margin:auto;
+    padding:20px;
+    margin-top: 20px;
+  }
+  
