@@ -34,12 +34,13 @@ app.post('/api/register',(req,res)=>{
     const phno=req.body.phno;
     const userType=req.body.userType;
     const GS_ID=req.body.GS_ID;
+    const facweburl=req.body.facweburl;
     var count=req.body.count;
     console.log("count:"+count)
-    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber,Faculty,GS_ID) VALUES (?,?,?,?,?,?,?,?);";
+    const stmt="INSERT INTO user (firstname,lastname,email,dob,pwd,phonenumber,Faculty,GS_ID,AmFacWebsite,activate_acc) VALUES (?,?,?,?,?,?,?,?,?,?);";
     const stmt2="INSERT INTO logtable (user_email,count) VALUES (?,?);";
     
-    db.query(stmt,[firstname,lastname,email,dob,pwd,phno,userType,GS_ID],(errs,result)=>{
+    db.query(stmt,[firstname,lastname,email,dob,pwd,phno,userType,GS_ID,facweburl,'Y'],(errs,result)=>{
         console.log(errs)
         db.query(stmt2,[email,count],(errs1,result1)=>{
             console.log(errs1)
@@ -250,7 +251,7 @@ app.post('/api/delete',(req,res)=>{
     console.log(emails);
     const stmt="DELETE FROM user WHERE email=?";
     db.query(stmt,[emails],(errs,result)=>{
-        console.log(result)
+        console.log(errs)
         res.send("Hello world")
     })
 })
@@ -376,6 +377,7 @@ app.post('/api/insertIntoSA',(req,res)=>{
     const platform=req.body.givenby;
     const curl=req.body.url;
     const stmt="INSERT INTO students_accomplishments (user_id,course,platform,certificate_link) VALUES(?,?,?,?);";
+    
     db.query(stmt,[userid,course,platform,curl],(errs,result)=>{
         console.log(errs)
         if(errs==null)
@@ -386,7 +388,9 @@ app.post('/api/insertIntoSA',(req,res)=>{
             res.send("fail")
         }
     })
+
 })
+
 //select from StudentAcheivements
 app.post('/api/deleteFromSA',(req,res)=>{
     const userid=req.body.userid;
@@ -415,23 +419,80 @@ app.post('/api/insertintogsprofile',(req,res)=>{
     const authors=req.body.authors;
     console.log(id,year,title,authors)
     const stmt="INSERT INTO gsarticle (id,title,year,authors) VALUES (?,?,?,?);";
+    const stmt1="SELECT gsarticleid FROM gsarticle WHERE id=? and title=? and year=? and authors=?;";
     db.query(stmt,[id,title,year,authors],(errs,result)=>{
         console.log(result,errs)
         if(errs!=null){
             res.send("fail")
         }
         else{
-            res.send("success")
+            db.query(stmt1,[id,title,year,authors],(err,results)=>{
+                res.send(results)
+            })
         }
     })
 })
+//insert into notification
+app.post('/api/insertnotification',(req,res)=>{
+    const facid=req.body.userid;
+    const gsid=req.body.gsarticleid;
+    const stmt="SELECT DISTINCT(from_id) FROM connect_request WHERE to_id=?;";
+    const stmt1="INSERT INTO notification (stud_id,fac_id,gs_article_id) VALUES (?,?,?);";
+    db.query(stmt,[facid],(err,result)=>{
+        console.log(result)
+        if(result.length>0){
+            var i=0;
+            for(i=0;i<result.length;i++){
+                db.query(stmt1,[result[i]['from_id'],facid,gsid[0]['gsarticleid']],(errs,result1)=>{
+                    
+                })
+            }
+        }
+    })
+})
+//select from notification
+app.post('/api/selectnotification',(req,res)=>{
+    const stid=req.body.stid;
+    const stmt="SELECT * FROM notification WHERE stud_id=?;";
+    const stmt1="SELECT * FROM gsprofile WHERE id=?;";
+    const stmt2="SELECT * FROM gsarticle WHERE gsarticleid=?;";
+    db.query(stmt,[stid],(err,result)=>{
+        console.log(result)
+
+        if(result.length>0){
+            var arr={}
+            for(var i=0;i<result.length;i++){
+                console.log(result[i]['gs_article_id'])
+                const fac_id=result[i]['fac_id']
+                db.query(stmt1,[fac_id],(err1,result1)=>{
+                    console.log(i,fac_id,result1)
+                    if(fac_id in arr===false){
+                        arr[fac_id]=[result1]
+                    }
+                    console.log(arr)
+                })
+                db.query(stmt2,[result[i]['gs_article_id']],(err2,result2)=>{
+                    
+                        arr[fac_id].push(result2) 
+                })
+        console.log(arr)
+            }
+            res.send(arr)
+        }
+        else{
+            res.send([])
+        }
+
+        
+
+    })
+})
+
 //delete from StudentAcheivements
 app.post('/api/selectFromSA',(req,res)=>{
     const userid=req.body.userid;
-    
     const stmt="SELECT * FROM students_accomplishments WHERE user_id=?;";
     db.query(stmt,[userid],(errs,result)=>{
-        
         if(errs==null)
         {
             res.send(result)
@@ -499,13 +560,22 @@ app.post('/gs/generate', (req, res) => {
 app.get('/',(req,res)=>{
     res.send("frty")
 })
-
+//select from amrpub
+app.post("/api/generatepublicationfromamrpub",(req,res)=>{
+    const uid=req.body.userid;
+    const stmt="SELECT * FROM amrpub WHERE uid=?;";
+    db.query(stmt,[uid],(errs,result)=>{
+        res.send(result)
+    })
+})
 app.post('/api/amrgenerate', (req, res)  => {
+    console.log("In amr generate")
     amrid=String(req.body.amrid);
     uid=Number(req.body.userid);
+    console.log("hello",amrid,uid)
     const stmt="SELECT count(*) as count from amrprofile where uid=?";
     db.query(stmt,[uid],(err,result)=>{
-        console.log(result,amrid,uid,req.body);
+        console.log(result,amrid,uid);
           if (result[0]['count']>0){
             db.query("delete from amrprofile where uid=?",[uid]);
             db.query("delete from amrpub where uid=?",[uid]);

@@ -171,10 +171,16 @@ border-radius: 5px;
 #subjectRow{
     text-decoration: underline;
 }
-.articles{
+.articles,.journal{
+    display: none;
     width:80%;
     margin:auto;
     
+}
+#articles_buttons{
+    width:60%;
+    margin:auto;
+    margin-bottom: 20px;
 }
 #articleRow{
     width:90%;

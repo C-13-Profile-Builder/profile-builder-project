@@ -20,6 +20,7 @@ function Loginpage(){
     const [phno,setphno]=useState('');
     const [confirmpwd,setconfirmpwd]=useState('');
     const [GSurl,seturl]=useState('');
+    const [fac_weburl,setfacweburl]=useState('')
     const[errors,seterror]=useState([])
     const [sendEmail,setsendEmail]=useState('');
     var [Studentcheck,setStudentcheck]=useState(false);
@@ -29,7 +30,7 @@ function Loginpage(){
     var [loginerrorcheckmsg,setloginerrorcheckmsg]=useState('Credentials Provided are Incorrect')
    function register(e){
        console.log(GSurl)
-       const urlParams = new URLSearchParams(GSurl);
+       const urlParams = new URLSearchParams(String(GSurl));
        console.log(GSurl)
        console.log(urlParams.get('user'))
     Errorstag=[]
@@ -69,23 +70,36 @@ function Loginpage(){
         pwd:pwd,
         phno:phno,
         userType:Studentcheck?'N':'Y',
+        facweburl:fac_weburl,
         GS_ID:urlParams.get('user'),
         count:1,
     }).then(()=>{
         console.log(Studentcheck)
+        if(!Studentcheck){
         history.push("/homepage/"+email+'/'+false)
         errorDiv.style.display='none'
         Axios.post('http://localhost:3001/api/getDetails',{
         email:email
         }).then((result)=>{
             console.log(result,result.data['0']['id'])
-        Axios.post('http://localhost:3001/gs/generate',
-        {
-        GS_ID:urlParams.get('user'),
-        userid:result.data['0']['id'],
+            Axios.post('http://localhost:3001/gs/generate',
+            {
+            GS_ID:urlParams.get('user'),
+            userid:result.data['0']['id'],
+            })
+            console.log("helloguyss",fac_weburl,result.data['0']['id'])
+            if(fac_weburl!==''){
+                Axios.post('http://localhost:3001/api/amrgenerate',
+                {
+                amrid:fac_weburl,
+                userid:result.data['0']['id'],
+                })
+            }
         })
+    
+    }
     })
-    })
+
    }
    else
    {        
@@ -101,7 +115,6 @@ function Loginpage(){
     
     function Login(e){
         e.preventDefault();
-       
         Axios.post('http://localhost:3001/api/login',{
             email:email,
             pwd:pwd,
@@ -394,7 +407,13 @@ function Loginpage(){
                             <Form.Label id="formlabel">
                                 Google Scholar URL
                             </Form.Label>
-                            <Form.Control type="text" placeholder='url' onChange={(e)=>{seturl(e.target.value)}}>
+                            <Form.Control type="text" placeholder='https://scholar.google.com/citations?hl=en&user=xxxxxxxxxx' onChange={(e)=>{seturl(e.target.value)}}>
+                            </Form.Control>
+
+                            <Form.Label id="formlabel">
+                                Amrita Faculty Website URL
+                            </Form.Label>
+                            <Form.Control type="text" placeholder='https://www.amrita.edu/faculty/xxxxxxxx' onChange={(e)=>{setfacweburl(e.target.value)}}>
                             </Form.Control>
                         </Form.Group>
 

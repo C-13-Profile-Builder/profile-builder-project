@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup,Link} from 'react-bootstrap'
 import './homepage.css'
 import {useParams,useHistory} from 'react-router-dom'
@@ -9,10 +9,10 @@ import {FaHome} from 'react-icons/fa'
 import {ImProfile,ImConnection} from 'react-icons/im'
 import {IoReturnUpBackSharp,IoSend,IoGlobe} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
-import {GiTeacher} from 'react-icons/gi'
+import {GiTeacher,GiThink} from 'react-icons/gi'
 import {FcFeedback} from 'react-icons/fc'
 import {FaExclamation} from 'react-icons/fa'
-import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone} from 'react-icons/ai'
+import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Modal from "react-bootstrap/Modal"
@@ -53,6 +53,7 @@ function Homepage(props) {
     var [domains,setdomain]=useState([])
     var [articles,setarticles]=useState([])
     var [profilearticles,setprofilearticles]=useState([])
+    var [profilePublication,setprofilePulication]=useState([])
     var [FavoriteFacultyProfile,setFavoriteFacultyProfile]=useState([])
     var [gsid,setgsid]=useState('');
     var [userid,setuserid]=useState(0);
@@ -86,11 +87,19 @@ function Homepage(props) {
     var [saurl,setsaUrl]=useState('')
     var [showStudAcheivements,setshowStudAcheivements]=useState([])
     var [fullname,setfullname]=useState('')
+    window.stopvar=0;
     searchdropdown()
     
-    
+    useEffect(() => {
+        document.title = "ProfileBuilder";
+        
+        if(window.stopvar===0){
+            notification()
+            window.stopvar=1}
+      });
 
     function profile(NameClass){
+        console.log(window.notificationdet)
         const name=document.querySelector('.'+NameClass)
         const profiles=document.querySelector('.Profile')
         name.style.display='none'
@@ -149,6 +158,23 @@ function Homepage(props) {
             }
         })
     }
+    function notification(){
+
+        Axios.post("http://localhost:3001/api/getDetails",{
+            email:uname,
+        }).then((t)=>{
+            
+            if(t.data['0']['Faculty']==="N"){
+                Axios.post("http://localhost:3001/api/selectnotification",{
+                    stid:t.data['0']['id'],
+                }).then((t1)=>{
+                    window.notificationdet=t1
+                    console.log(window.notificationdet)
+                })
+            }
+        })
+    }
+    
     function delete_fromstudentsAccomplisments(id,course,platform,url){
         console.log(id,course,platform,url)
         Axios.post("http://localhost:3001/api/deleteFromSA",{
@@ -196,10 +222,14 @@ function Homepage(props) {
                 year:saPlatform,
                 authors:saurl,
             }).then((t1)=>{
-                alert(t1.data)
+                alert("Success")
+                console.log(t1.data)
                 profilePagination(paginationpageno)
                 profile('Profile')
-                
+                Axios.post("http://localhost:3001/api/insertnotification",{
+                    userid:userid,
+                    gsarticleid:t1.data,
+                })
             })
         }
     }
@@ -296,6 +326,10 @@ function Homepage(props) {
         }
     }
     function ViewCompleteArticle(gsid,NameClass){
+        const tag=document.querySelector('.articles')
+        const tag1=document.querySelector('.journal')
+        tag.style.display='none';
+        tag1.style.display='none';
         const IndividualFacultyProfile=document.querySelector('.IndividualFacultyProfile')
         const nc=document.querySelector('.'+NameClass)
         nc.style.display='none'
@@ -315,6 +349,13 @@ function Homepage(props) {
         Axios.post("http://localhost:3001/api/getDetails",{
                 email:uname,
             }).then((t)=>{
+                Axios.post("http://localhost:3001/api/generatepublicationfromamrpub",{
+                    userid:t.data['0']['id'],
+                }).then((z)=>{
+                    console.log(z)
+                    console.log(z.data)
+                    setprofilePulication(z.data)
+                })
                 Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
                     gsid:gsid,
                     }).then((t1)=>{
@@ -330,6 +371,13 @@ function Homepage(props) {
                                     else if(t2.data[0]['status']==='A'){
                                     setconnection_status('Accepted')
                                     }
+                                    else{
+                                        setconnection_status('Connect')
+                                    }
+                                }
+                                else
+                                {
+                                    setconnection_status('Connect')
                                 }
                             })
                     })
@@ -661,6 +709,18 @@ function Homepage(props) {
         })
         
     }
+    function showarticles_jounalinIndFacprofile(from){
+        const tag=document.querySelector('.articles')
+        const tag1=document.querySelector('.journal')
+        if(from==='articles'){
+            tag.style.display='block';
+            tag1.style.display='none';
+        }
+        else{
+            tag1.style.display='block';
+            tag.style.display='none';
+        }
+    }
     return (
         
         <div>
@@ -964,9 +1024,7 @@ function Homepage(props) {
 
                             </Form>
                 </Modal.Body>
-                <Modal.Footer>
                 
-                </Modal.Footer>
             </Modal>
 
             <div className='Profile'>
@@ -1197,6 +1255,23 @@ function Homepage(props) {
                 </Modal.Footer>
             </Modal>
             
+            {/* <Modal show={notificationShow} onHide={handleClosernotification}  animation={True}>
+                <Modal.Header closeButton>
+                <Modal.Title>NEW ARTICLES</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {window.notificationdet.map((index)=>(
+                    <div>
+                        <p>{index['0'].prf_name}</p>
+                        <p>{index['0'].prf_dest}</p>
+                    </div>
+                        
+                    ))}
+                </Modal.Body>
+                <Modal.Footer>
+                    
+                </Modal.Footer>
+            </Modal> */}
             <div className='Generation'>
                 <div>
                     <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
@@ -1313,21 +1388,48 @@ function Homepage(props) {
                         <br></br>
                         <br></br>
                 </div>
+                <div id="articles_buttons">
+                    <Row>
+                        <Col md={7}>
+                            <p style={{color:'whitesmoke',fontSize:'2.75vh'}}>CLICK ME TO CHECKOUT ARTICLES AND JOURNALS <span style={{color:'yellow'}}><AiOutlineArrowRight size='1.5em'/></span></p>
+                        </Col>
+                        <Col md={5}>
+                            <Button variant="success" onClick={()=>showarticles_jounalinIndFacprofile('articles')} style={{marginRight:'20px',marginLeft:'20px'}}>Articles</Button>
+                            <Button variant="success" onClick={()=>showarticles_jounalinIndFacprofile('journal')}>Journals</Button> 
+                        </Col>
+                    </Row>
+                    
+                </div>
                 <div className="articles">
-                <div>
-                    {articles.map((index) => (
-                        
-                        <div id="articleRow">
-                            <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
-                            <Row xs={6}>      
-                              <Col><p id="ListOfFacultiesPara">Cite: <span>{index.cite}</span></p></Col>                     
-                              <Col><p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p></Col>
-                            </Row>  
-                            <p id="ListOfFacultiesPara">Authors: <span>{index.authors}</span></p>
-                            
-                        </div>
-                            ))}
-                        </div>
+                    <div>
+                        <center><p style={{color:'whitesmoke',fontSize:'7vh',fontStyle:'italic',textDecoration:'underline'}}>ARTICLES</p></center>
+                        {articles.map((index) => (
+                            <div id="articleRow">
+                                <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
+                                <Row xs={6}>      
+                                <Col><p id="ListOfFacultiesPara">Cite: <span>{index.cite}</span></p></Col>                     
+                                <Col><p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p></Col>
+                                </Row>  
+                                <p id="ListOfFacultiesPara">Authors: <span>{index.authors}</span></p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="journal">
+                    <div>
+                    <center><p style={{color:'whitesmoke',fontSize:'7vh',fontStyle:'italic',textDecoration:'underline'}}>PUBLICATIONS</p></center>
+                        {profilePublication.length?
+                            profilePublication.map((index) => (
+                            <div id="articleRow">
+                                <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
+                                <p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p>
+                            </div>
+                        ))
+                        :
+                        <div>
+                            <center><p style={{marginTop:'20px',fontSize:'x-large',fontWeight:'bolder',color:'#e3a026'}}><FaExclamation size="1em" id="errorDivIcon"/> NO PUBLICATIONS FROM FACULTY WEBSITE</p></center>
+                        </div>}
+                    </div>
                 </div>
             </div>
 
@@ -1351,7 +1453,7 @@ function Homepage(props) {
                     <center><h2>ALL FAVORITE PROFILES</h2></center>
                     <br></br>
                     <div className="ListOfFaculties">
-                        {FavoriteFacultyProfile.map((index) => (
+                        {FavoriteFacultyProfile.length?FavoriteFacultyProfile.map((index) => (
                             <div>
                                 <Row className="justify-content-end" id="IndividualFacultyProfileButton">
                                     <Button variant="outline-light" onClick={()=>RemoveFromFavorites(index.gs_id)} ><AiOutlineStar/> Remove From Favorites</Button>
@@ -1378,13 +1480,18 @@ function Homepage(props) {
                                 </Row>
                             </div>
                             
-                        ))}
+                        )):
+                        <div>
+                            <center><p><GiThink size='20vh' color='white' style={{padinng:'10px',borderRadius:'10px'}}/></p></center>
+                            <center><p style={{marginTop:'20px',fontSize:'8vh',fontWeight:'bolder',color:'whitesmoke'}}><FaExclamation size="1em" id="errorDivIcon"/> You have <span style={{color:'#e3a026'}}>NO FAVORITES</span></p></center>
+                        </div>
+                        }
+                        
                     </div>
                 </div>
 
             </div>
 
         </div>
-    )
-}
+)}
 export default Homepage;
