@@ -245,6 +245,14 @@ app.post('/api/updateActivate_account',(req,res)=>{
     })
     
 })
+//select id from gsprofile
+app.post("/api/idgsprofile",(req,res)=>{
+    const gsid=req.body.gsid;
+    const stmt="SELECT * FROM gsprofile WHERE gs_id=?;";
+    db.query(stmt,[gsid],(err,result)=>{
+        res.send(result)
+    })
+})
 //delete user
 app.post('/api/delete',(req,res)=>{
     const emails=req.body.email;

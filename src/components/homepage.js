@@ -345,17 +345,22 @@ function Homepage(props) {
             setarticles(res.data['2'])
             console.log(articles)
         })
-
+        Axios.post("http://localhost:3001/api/idgsprofile",{
+            gsid:gsid,
+        }).then((t)=>{
+            Axios.post("http://localhost:3001/api/generatepublicationfromamrpub",{
+                userid:t.data['0']['id'],
+            }).then((z)=>{
+                console.log(z)
+                console.log(z.data)
+                setprofilePulication(z.data)
+            })
+        })
+        
         Axios.post("http://localhost:3001/api/getDetails",{
                 email:uname,
             }).then((t)=>{
-                Axios.post("http://localhost:3001/api/generatepublicationfromamrpub",{
-                    userid:t.data['0']['id'],
-                }).then((z)=>{
-                    console.log(z)
-                    console.log(z.data)
-                    setprofilePulication(z.data)
-                })
+                
                 Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
                     gsid:gsid,
                     }).then((t1)=>{
