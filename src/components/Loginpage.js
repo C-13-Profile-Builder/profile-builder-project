@@ -129,7 +129,7 @@ function Loginpage(){
             console.log(sessionStorage)
         })
     }
-    function getNotification(){
+    function getNotification(type){
         Axios.post("http://localhost:3001/api/getdetails",{
             email:email,
         }).then((t)=>{
@@ -154,10 +154,12 @@ function Loginpage(){
                     localStorage.setItem('Booleannoti',true)
                     console.log(localStorage.getItem('notificationProfile'))
                     console.log(localStorage)
+                    history.push("/homepage/"+email+'/'+type);
                 }
                 else{
                     localStorage.setItem('Booleannoti',false)
                     console.log(localStorage)
+                    history.push("/homepage/"+email+'/'+type);
                 }
                 })
                 Axios.post("http://localhost:3001/api/deletenotification",{
@@ -165,7 +167,8 @@ function Loginpage(){
                 })
             }
             else{
-                localStorage.setItem('Booleannoti',false)   
+                localStorage.setItem('Booleannoti',false)
+                history.push("/homepage/"+email+'/'+type); 
             }
         })
     }
@@ -191,15 +194,14 @@ function Loginpage(){
                         //document.cookie = "username="+email+"; expires=Sat, 29 May 2021 15:48:00 UTC; path=/homepage/"+email+"/"+false+";";
                         //setShowrating(true);
                         homepageusercount()
-                        getNotification()
-                        history.push("/homepage/"+email+'/'+true);
+                        getNotification(true)
+                       //history.push("/homepage/"+email+'/'+true);
                     }
                     else{
                         homepageusercount()
-                        getNotification()
+                        getNotification(false)
                         //document.cookie = expires + ";path=/homepage/:"+email+"/:"+false;
                         //document.cookie = "username="+email+"; expires=Sat, 29 May 2021 15:48:00 UTC; path=/homepage/"+email+"/"+false+";";
-                        history.push("/homepage/"+email+'/'+false);
                         
                     }    
                     

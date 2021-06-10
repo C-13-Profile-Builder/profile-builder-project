@@ -11,9 +11,9 @@ app.use(cors())
 const db=mysql.createConnection({
     host:'localhost',
     port:3306,
-    database:'sedb',
-    user:'ashwin',
-    password:'root'
+    database:'test',
+    user:'root',
+    password:''
 });
 db.connect(function (err) {
     if(err){
