@@ -72,7 +72,19 @@ app.post('/api/login',(req,res)=>{
         }
     })
 })
-
+//get count of users
+app.post("/api/getcountfromusers",(req,res)=>{
+    const stmt="SELECT COUNT(*) as count FROM user;";
+    const stmt1="SELECT COUNT(*) as count FROM user WHERE Faculty=?"
+    db.query(stmt,[],(errs,result)=>{
+        db.query(stmt1,['Y'],(err1,result1)=>{
+            db.query(stmt1,['N'],(err2,result2)=>{
+                res.send([result,result1,result2])
+            })
+        })
+        
+    })
+})
 //get details for profile viewing and editing
 app.post('/api/getDetails',(req,res)=>{
     const email=req.body.email;
@@ -461,41 +473,34 @@ app.post('/api/insertnotification',(req,res)=>{
 //select from notification
 app.post('/api/selectnotification',(req,res)=>{
     const stid=req.body.stid;
-    const stmt="SELECT * FROM notification WHERE stud_id=?;";
-    const stmt1="SELECT * FROM gsprofile WHERE id=?;";
-    const stmt2="SELECT * FROM gsarticle WHERE gsarticleid=?;";
+    const stmt="SELECT DISTINCT(fac_id) FROM notification WHERE stud_id=?;";
+    const stmt1="SELECT * FROM gsprofile WHERE id IN (?);";
     db.query(stmt,[stid],(err,result)=>{
-        console.log(result)
-
-        if(result.length>0){
-            var arr={}
-            for(var i=0;i<result.length;i++){
-                console.log(result[i]['gs_article_id'])
-                const fac_id=result[i]['fac_id']
-                db.query(stmt1,[fac_id],(err1,result1)=>{
-                    console.log(i,fac_id,result1)
-                    if(fac_id in arr===false){
-                        arr[fac_id]=[result1]
-                    }
-                    console.log(arr)
-                })
-                db.query(stmt2,[result[i]['gs_article_id']],(err2,result2)=>{
-                    
-                        arr[fac_id].push(result2) 
-                })
-        console.log(arr)
-            }
-            res.send(arr)
-        }
-        else{
-            res.send([])
-        }
-
         
-
+        var a=[]
+        for(var i=0;i<result.length;i++){
+            a.push(result[i]['fac_id'])
+        }
+        db.query(stmt1,[a],(err1,result1)=>{
+            res.send(result1)
+        })
     })
 })
-
+//delete from notification
+app.post('/api/deletenotification',(req,res)=>{
+    const stid=req.body.stid;
+    const stmt="DELETE FROM notification WHERE stud_id=?;";
+    db.query(stmt,[stid],(err,result)=>{
+        res.send(result)
+    })
+})
+//get rating from review
+app.post("/api/getratingfromreview",(req,res)=>{
+    const stmt="SELECT SUM(rating) as sumof,COUNT(*) as count FROM reviews;";
+    db.query(stmt,[],(errs,result)=>{
+        res.send(result)
+    })
+})
 //delete from StudentAcheivements
 app.post('/api/selectFromSA',(req,res)=>{
     const userid=req.body.userid;

@@ -53,7 +53,6 @@
 #featureHeader span{
     color:#e3a026;
     font-weight: bolder;
-    
 }
 #FeaturesRow{
     margin:auto;
@@ -351,5 +350,15 @@ border-radius: 5px;
     margin:auto;
     padding:20px;
     margin-top: 20px;
+    
+  }
+  #AppRating{
+      width: 40%;
+      margin: auto;
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 20px;
   }
   

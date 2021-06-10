@@ -9,9 +9,13 @@ import {FaHome} from 'react-icons/fa'
 import {ImProfile,ImConnection} from 'react-icons/im'
 import {IoReturnUpBackSharp,IoSend,IoGlobe} from 'react-icons/io5'
 import {MdFavorite} from 'react-icons/md'
+import {BsStarFill,BsStarHalf,BsStar} from 'react-icons/bs'
+import {ImHappy2} from 'react-icons/im'
+import {IoMdNotifications} from 'react-icons/io'
 import {GiTeacher,GiThink} from 'react-icons/gi'
 import {FcFeedback} from 'react-icons/fc'
 import {FaExclamation} from 'react-icons/fa'
+import {RiNumber0,RiNumber1,RiNumber2,RiNumber3,RiNumber4,RiNumber5,RiNumber6,RiNumber7,RiNumber8,RiNumber9} from 'react-icons/ri'
 import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -20,8 +24,7 @@ import Typography from '@material-ui/core/Typography';
 import Pagination from '@material-ui/lab/Pagination';
 import Rating from '@material-ui/lab/Rating';
 
-
-
+var FontAwesomeIcon=require('react-fontawesome')
 var historyArray=[];
 var userchoice=[]
 function searchdropdown() {
@@ -69,12 +72,12 @@ function Homepage(props) {
     const [showprofileinnetworks, setshowprofileinnetworks] = useState(false);
     var [reportstated,setreportstated]=useState('')
     var [connection_status,setconnection_status]=useState('Connect')
-    const [ratingshow, setShowrating] = useState(rating=='false'?false:true);
+    
     const [ratingvalue, setratingValue] = React.useState(0);
     const [hoverrating, setHoverrating] = React.useState(-1);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const handleCloserating = () => setShowrating(false);
+    
     const handleCloseprofileinnetworks =() => setshowprofileinnetworks(false);
     const handlemsgShow =() => setmsgShow(false)
     var [dropdownoptions,setdropdownoptions]=useState([])
@@ -87,19 +90,68 @@ function Homepage(props) {
     var [saurl,setsaUrl]=useState('')
     var [showStudAcheivements,setshowStudAcheivements]=useState([])
     var [fullname,setfullname]=useState('')
-    window.stopvar=0;
+    var [notificationShow,setnotificationShow]=useState((rating==='false'&&localStorage.getItem('Booleannoti')==='true')?true:false);
+    var handleClosernotification=()=>{setnotificationShow(false);localStorage.setItem("Booleannoti",false);localStorage.removeItem("notificationProfile");console.log(localStorage)};
+    const [ratingshow, setShowrating] = useState(rating==='false'?false:true);
+    const handleCloserating = () => {setShowrating(false);setnotificationShow(localStorage.getItem('Booleannoti')==='false'?false:true)};
+    
+        const starrat={
+            '0':<p><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '0.5':<p><BsStarHalf size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '1':<p><BsStarFill size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '1.5':<p><BsStarFill size='7vh'/><BsStarHalf size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '2':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '2.5':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarHalf size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '3':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
+            '3.5':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarHalf size='7vh'/><BsStar size='7vh'/></p>,
+            '4':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStar size='7vh'/></p>,
+            '4.5':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarHalf size='7vh'/></p>,
+            '5':<p><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/><BsStarFill size='7vh'/></p>
+        }
+        
+    function totno_of_user(){
+        console.log(sessionStorage)
+        var v=sessionStorage.getItem('totalusers')
+        console.log(v)
+        var a;
+        for(var i=0;i<v.length;i++){
+            var b="fa-solid fa-"+v[i]
+            a=a+<FontAwesomeIcon icon={b}/>
+            console.log(a)
+        }
+        console.log(a)
+        return a
+    }
+    function stud_user(){
+        var v=sessionStorage.getItem('Studusers')
+        var a;
+        for(var i=0;i<v.length;i++){
+            var b="fa-solid fa-"+v[i]
+            a=a+<FontAwesomeIcon icon={b} />
+            console.log(a)
+        }
+        console.log(a)
+        return a
+    }
+    function facuser(){
+        var v=sessionStorage.getItem('Facusers')
+        var a;
+        for(var i=0;i<v.length;i++){
+            var b="fa-solid fa-"+v[i]
+            a=a+<FontAwesomeIcon icon={b} />
+            console.log(a)
+        }
+        console.log(a)
+        return a
+    }
     searchdropdown()
     
     useEffect(() => {
         document.title = "ProfileBuilder";
-        
-        if(window.stopvar===0){
-            notification()
-            window.stopvar=1}
       });
 
     function profile(NameClass){
-        console.log(window.notificationdet)
+        console.log(window.notificationdet,localStorage)
         const name=document.querySelector('.'+NameClass)
         const profiles=document.querySelector('.Profile')
         name.style.display='none'
@@ -158,22 +210,7 @@ function Homepage(props) {
             }
         })
     }
-    function notification(){
-
-        Axios.post("http://localhost:3001/api/getDetails",{
-            email:uname,
-        }).then((t)=>{
-            
-            if(t.data['0']['Faculty']==="N"){
-                Axios.post("http://localhost:3001/api/selectnotification",{
-                    stid:t.data['0']['id'],
-                }).then((t1)=>{
-                    window.notificationdet=t1
-                    console.log(window.notificationdet)
-                })
-            }
-        })
-    }
+    
     
     function delete_fromstudentsAccomplisments(id,course,platform,url){
         console.log(id,course,platform,url)
@@ -873,6 +910,15 @@ function Homepage(props) {
                     </Row>
                 </div>
                 <br></br>
+                <div id="AppRating">
+                    <center>
+                        <h3 id="featureHeader">Users <span>rating</span></h3>
+                        <p>
+                            <ImHappy2 size='7vh'/>{starrat[sessionStorage.getItem('rating')]}
+                        </p>
+                    </center>
+                </div>
+                
                 <div id="footer">
                     <center>
                         <h4 id="footerHeader">ProfileBuilder</h4>    
@@ -1260,23 +1306,22 @@ function Homepage(props) {
                 </Modal.Footer>
             </Modal>
             
-            {/* <Modal show={notificationShow} onHide={handleClosernotification}  animation={True}>
+            <Modal show={notificationShow} onHide={handleClosernotification}  animation={true}>
                 <Modal.Header closeButton>
-                <Modal.Title>NEW ARTICLES</Modal.Title>
+                <Modal.Title><IoMdNotifications size='5vh'/> NOTIFICATION</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {window.notificationdet.map((index)=>(
+                    {/* {localStorage.getItem('notificationProfile').map((index)=>( */}
                     <div>
-                        <p>{index['0'].prf_name}</p>
-                        <p>{index['0'].prf_dest}</p>
+                        <p style={{fontSize:'3vh',fontDecoration:'underline'}}>Following Faculties Have Some Article updates</p>
+                        <li style={{fontSize:'3vh'}}> {localStorage.getItem('notificationProfile')}</li>
                     </div>
-                        
-                    ))}
+                    {/* ))} */}
                 </Modal.Body>
                 <Modal.Footer>
                     
                 </Modal.Footer>
-            </Modal> */}
+            </Modal>
             <div className='Generation'>
                 <div>
                     <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
@@ -1424,12 +1469,28 @@ function Homepage(props) {
                     <div>
                     <center><p style={{color:'whitesmoke',fontSize:'7vh',fontStyle:'italic',textDecoration:'underline'}}>PUBLICATIONS</p></center>
                         {profilePublication.length?
-                            profilePublication.map((index) => (
-                            <div id="articleRow">
-                                <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
-                                <p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p>
-                            </div>
-                        ))
+                            
+                            // <div id="articleRow">
+                            //     <p id="ListOfFacultiesPara">Title: <span>{index.title}</span></p>
+                            //     <p id="ListOfFacultiesPara">Year: <span>{index.year}</span></p>
+                            // </div>
+                            <table className="table table-light table-striped table-bordered-dark">
+                                <thead className="thead-dark">
+                                    <tr>
+                                        <th scope="col">Year</th>
+                                        <th scope="col">Title</th>
+                                    </tr>
+                                </thead> 
+                                <tbody>
+                                    {profilePublication.map((index) => (
+                                        <tr>
+                                            <td>{index.year}</td>
+                                            <td>{index.title}</td>
+                                        </tr>
+                                    ))}   
+                                </tbody>
+                            </table>  
+                        
                         :
                         <div>
                             <center><p style={{marginTop:'20px',fontSize:'x-large',fontWeight:'bolder',color:'#e3a026'}}><FaExclamation size="1em" id="errorDivIcon"/> NO PUBLICATIONS FROM FACULTY WEBSITE</p></center>
