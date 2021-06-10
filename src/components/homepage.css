@@ -167,6 +167,10 @@ border-radius: 5px;
     margin: auto;
     
 }
+.displayHistory {
+    display: none
+}
+
 #subjectRow{
     text-decoration: underline;
 }

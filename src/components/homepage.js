@@ -16,7 +16,7 @@ import {GiTeacher,GiThink} from 'react-icons/gi'
 import {FcFeedback} from 'react-icons/fc'
 import {FaExclamation} from 'react-icons/fa'
 import {RiNumber0,RiNumber1,RiNumber2,RiNumber3,RiNumber4,RiNumber5,RiNumber6,RiNumber7,RiNumber8,RiNumber9} from 'react-icons/ri'
-import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight} from 'react-icons/ai'
+import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight, AiFillDelete} from 'react-icons/ai'
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Modal from "react-bootstrap/Modal"
@@ -72,7 +72,7 @@ function Homepage(props) {
     const [showprofileinnetworks, setshowprofileinnetworks] = useState(false);
     var [reportstated,setreportstated]=useState('')
     var [connection_status,setconnection_status]=useState('Connect')
-    
+    var [facultyHistory, setFacultyHistory] = useState([]);
     const [ratingvalue, setratingValue] = React.useState(0);
     const [hoverrating, setHoverrating] = React.useState(-1);
     const handleClose = () => setShow(false);
@@ -347,7 +347,64 @@ function Homepage(props) {
             GotoLogin();
         })
     }
+
+    function insertHistory(relation) {
+        Axios.post('http://localhost:3001/api/getDetails', {
+            email: uname
+        }).then((result) => {
+            console.log(result.data[0]['id'], relation.data[0]['gs_id'])
+            Axios.post('http://localhost:3001/api/insertBrowserHistory', {
+                id: result.data[0]['id'],
+                gs_id: relation.data[0]['gs_id'],
+
+            }).then((res) => {
+                console.log(res.data);
+                console.log("line 297: ", facultyHistory);
+            })
+        })
+    }
     
+    function displayHistory(NameClass) {
+
+        if (NameClass !== "displayHistory") {
+            historyArray.push(NameClass);
+        }
+        const history = document.querySelector('.displayHistory');
+        const name = document.querySelector('.' + NameClass);
+        name.style.display = 'none';
+        history.style.display = 'block';
+        
+
+        Axios.post("http://localhost:3001/api/getDetails", {
+            email: uname
+        }).then((result) => {
+            //console.log("result = ",result.data)
+            Axios.post("http://localhost:3001/api/history", {
+                id: result.data[0]['id'],
+            }).then((res) => {
+                //console.log("res = ",res.data)
+                setFacultyHistory([res.data]);
+            })
+        })
+    }
+
+    function DeleteHistoryItem(gs_id){
+        Axios.post('http://localhost:3001/api/getDetails',{
+            email: uname
+        }).then((result)=>{
+            console.log(result.data)
+            Axios.post('http://localhost:3001/api/deleteHistoryItem',{
+                id: result.data['0']['id'],
+                gsid: gs_id
+            }).then((res)=>{
+                console.log(res.data)
+                if (res.data === "Successfully deleted item"){
+                    displayHistory('displayHistory')
+                }
+            })
+        })
+    }
+
     function ProfileGenerate(from){
         historyArray.push(from)
         if(profilegenerate!=''){
@@ -355,6 +412,8 @@ function Homepage(props) {
               subject_name: profilegenerate
             }).then((result)=>{
                 setFacultyProfileData(result.data)
+                insertHistory(result);
+                
             })
             const Generation=document.querySelector('.Generation')
             const fromclass=document.querySelector('.'+from)
@@ -793,6 +852,7 @@ function Homepage(props) {
                         <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
                             <NavDropdown.Item onClick={()=>profile("home")} >Profile</NavDropdown.Item>
                             <NavDropdown.Item onClick={()=>DisplayFavorites("home")}>Favorites</NavDropdown.Item>
+                            <NavDropdown.Item onClick={() => displayHistory("home")}>History</NavDropdown.Item>
                             <NavDropdown.Divider />
                             <NavDropdown.Item onClick={handleShow}>Delete</NavDropdown.Item>
                             <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
@@ -1558,6 +1618,64 @@ function Homepage(props) {
 
             </div>
 
+            <div className="displayHistory">
+                <div>
+                    <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
+                        <Navbar.Brand><ImProfile size='2em' /> Profile_Builder</Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse className="justify-content-end">
+                            <Nav.Link id="HomeLink" onClick={() => goBack("displayHistory")}><IoReturnUpBackSharp size="1.5em" />  GO BACK</Nav.Link>
+                            <Nav.Link onClick={() => GotoHome("displayHistory")} id="HomeLink"><FaHome size="1.5em" />  HOME</Nav.Link>
+                            <NavDropdown title={<Navbar.Text>Signed in as: {username}</Navbar.Text>} id="basic-nav-dropdown">
+                                <NavDropdown.Item onClick={() => profile("displayHistory")}>Profile</NavDropdown.Item>
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={GotoLogin}>Sign Out</NavDropdown.Item>
+                            </NavDropdown>
+                        </Navbar.Collapse>
+                    </Navbar>
+                </div>
+                <div className='FacultyDetails'>
+                    <center><h2>ALL PROFILES YOU'VE SEARCHED</h2></center>
+                    <br></br>
+                    <div className="ListOfFaculties">
+                        {facultyHistory.map((index) => (
+                            <div>
+                                {index.slice(0).reverse().map((i) => {
+                                    return (
+                                        <div>
+                                            <Row className="justify-content-end" id="IndividualFacultyProfileButton">
+                                                <Button variant="outline-light" onClick={() => DeleteHistoryItem(i.gs_id)} ><AiFillDelete /> Delete</Button>
+                                            </Row>
+                                            <Row id="ListOfFacultiesRow">
+                                                <Col md={4}>
+                                                    <center> <img src={i.photo_url} width="128px" height="128px" id="ListOfFacultiesRowImg" /></center>
+                                                    <br></br>
+                                                </Col>
+                                                <Col md={7}>
+                                                    <Row>
+                                                        <p id="ListOfFacultiesPara">Name: <span>{i.prf_name}</span></p>
+                                                    </Row>
+                                                    <Row>
+                                                        <p id="ListOfFacultiesPara">Place of work: <span>{i.prf_des}</span></p>
+                                                    </Row>
+                                                    <Row>
+                                                        <p id="ListOfFacultiesPara">GS ID: <span>{i.gs_id}</span></p>
+                                                    </Row>
+                                                    <Row>
+                                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={() => ViewCompleteArticle(i.gs_id, 'displayHistory')}>View Articles</a></span></p>
+                                                    </Row>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
+                        )
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
 )}
 export default Homepage;

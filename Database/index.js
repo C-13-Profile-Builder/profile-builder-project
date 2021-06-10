@@ -12,8 +12,8 @@ const db=mysql.createConnection({
     host:'localhost',
     port:3306,
     database:'sedb',
-    user:'root',
-    password:'password'
+    user:'ashwin',
+    password:'root'
 });
 db.connect(function (err) {
     if(err){
@@ -95,6 +95,14 @@ app.post('/api/getDetails',(req,res)=>{
         }
     )
 })
+//get history entries
+app.post('/api/history',(req,res)=>{
+    const userid = req.body.id;
+    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_name,gsprofile.prf_des,gsprofile.photo_url FROM browser_history,gsprofile where browser_history.id=? and browser_history.GS_ID=gsprofile.gs_id";
+    db.query(stmt,[userid],(err,result)=>{
+        res.send(result)
+    });
+});
 //Insert Into Favorites Table
 app.post('/api/insertFavorites',(req,res)=>{
     const id=req.body.id;
@@ -121,6 +129,35 @@ app.post('/api/deleteFavorites',(req,res)=>{
     const stmt="Delete from favorites where id=? and GS_ID=?;";
     db.query(stmt,[id,gsid],(err,result)=>{
         res.send("Success")
+    })
+})
+
+//insert into browser_history table
+app.post('/api/insertBrowserHistory',(req,res)=>{
+    const id = req.body.id;
+    const gsid = req.body.gs_id;
+    const stmt1 = "SELECT * FROM browser_history where GS_ID=? and id=?;";
+    db.query(stmt1,[gsid,id],(errs,result)=>{
+        if (result.length > 0){
+            res.send("Yes this entry already exists in db")
+        } else {
+            const stmt = "INSERT INTO browser_history (id,GS_ID) VALUES (?,?);";
+            db.query(stmt,[id,gsid],(err,result)=>{
+                console.log("got the error here",err)
+                res.send("No, this entry doesn't exist in db, I'll add it")
+            })
+        }
+    })
+})
+
+//Delete from history table
+app.post('/api/deleteHistoryItem',(req,res)=>{
+    const id = req.body.id;
+    const gsid = req.body.gsid;
+    console.log(id,gsid);
+    const stmt = "DELETE FROM browser_history WHERE id=? AND GS_ID=?;";
+    db.query(stmt,[id,gsid],(err,result)=>{
+        res.send("Successfully deleted item");
     })
 })
 
