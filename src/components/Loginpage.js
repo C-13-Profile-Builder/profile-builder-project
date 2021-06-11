@@ -584,11 +584,12 @@ function Loginpage(){
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                    <Button variant="primary" onClick={activateAccount}>
+                    <Button variant="primary" onClick={activateAccount} id="ForTestingPurpose">
                         Send Mail
                     </Button>
                     </Modal.Footer>
                 </Modal>
+                <p id="paraForTesting"style={{display:'none'}}>hellomailsent</p>
                 {/* <div className="Homepage">
                     <Homepage username={email}>
 

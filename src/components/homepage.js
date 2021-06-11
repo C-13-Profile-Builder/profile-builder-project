@@ -43,7 +43,13 @@ function searchdropdown() {
 
 function Homepage(props) {
     let history=useHistory()
-    let {uname,rating}=useParams()
+    // let uname="mksroct2000@gmail.com"
+    // let rating=false
+    const arr=window.location.href.split('/')
+    console.log(arr[arr.length-1],arr[arr.length-2],arr)
+    let uname=arr[arr.length-2];
+    let rating=arr[arr.length-1];
+    // let {uname,rating}=useParams()
     const [profilegenerate,setProfileGenerate]=useState('');
     const [fname,setfname]=useState('');
     const [lname,setlastname]=useState('');
@@ -560,7 +566,7 @@ function Homepage(props) {
                 console.log(res.data)
                 settextpopupmsg('Removed From favorites')
                 setpopupmsg(true)
-                setTimeout(()=>{setpopupmsg(false),2000})
+                setTimeout(() => {setpopupmsg(false)}, 2000);
                 if(res.data=="Success"){
                     DisplayFavorites("displayFavorites")
                 }

@@ -12,6 +12,7 @@ function App() {
   console.log(document.cookie)
   return (
     <div>
+      <p style={{display:'none'}}>This is app.js</p>
       <BrowserRouter>
         <Switch>
           <Route exact path="/" component={Loginpage}/>
