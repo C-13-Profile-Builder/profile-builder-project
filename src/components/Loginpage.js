@@ -1,5 +1,5 @@
-import React, { Component,useState } from 'react'
-import {Button,Navbar,Nav,Form,Col,Row,Modal} from 'react-bootstrap'
+import React, { Component,useState,useEffect } from 'react'
+import {Button,Navbar,Nav,Form,Col,Row,Modal,Spinner} from 'react-bootstrap'
 import './Loginpage.css'
 import Axios from 'axios'
 import * as emailjs from 'emailjs-com'
@@ -29,7 +29,16 @@ function Loginpage(){
     var [forgotpasswordmsg,setforgotpasswordmsg]=useState('Enter the email address you have registerd with. We ll send you a link to reset your password.')
     var [countoflogin,setcountoflogin]=useState(0)
     var [loginerrorcheckmsg,setloginerrorcheckmsg]=useState('Credentials Provided are Incorrect')
+    
+    
+    useEffect(() => {
+        document.title = "PB-SignUp/SignIn";
+      });
+
    function register(e){
+    
+        const tag1=document.querySelector('#loadingGIF')
+        tag1.style.display='block'
        console.log(GSurl)
        const urlParams = new URLSearchParams(String(GSurl));
        console.log(GSurl)
@@ -76,33 +85,36 @@ function Loginpage(){
         count:1,
     }).then(()=>{
         console.log(Studentcheck)
-        history.push("/homepage/"+email+'/'+false)
+        //history.push("/homepage/"+email+'/'+false)
         errorDiv.style.display='none'
         homepageusercount();
         if(!Studentcheck){
-        Axios.post('http://localhost:3001/api/getDetails',{
-        email:email
-        }).then((result)=>{
-            console.log(result,result.data['0']['id'])
-            Axios.post('http://localhost:3001/gs/generate',
-            {
-            GS_ID:urlParams.get('user'),
-            userid:result.data['0']['id'],
-            })
-            console.log("helloguyss",fac_weburl,result.data['0']['id'])
-            if(fac_weburl!==''){
-                Axios.post('http://localhost:3001/api/amrgenerate',
+            Axios.post('http://localhost:3001/api/getDetails',{
+            email:email
+            }).then((result)=>{
+                console.log(result,result.data['0']['id'])
+                Axios.post('http://localhost:3001/gs/generate',
                 {
-                amrid:fac_weburl,
+                GS_ID:urlParams.get('user'),
                 userid:result.data['0']['id'],
                 })
-            }
-        })
-    
-    }
+                console.log("helloguyss",fac_weburl,result.data['0']['id'])
+                if(fac_weburl!==''){
+                    Axios.post('http://localhost:3001/api/amrgenerate',
+                    {
+                    amrid:fac_weburl,
+                    userid:result.data['0']['id'],
+                    })
+                }
+                })
+            history.push("/homepage/"+email+'/'+false)
+        }
+        else{
+            history.push("/homepage/"+email+'/'+false)
+        }
     })
-
    }
+
    else
    {        
     errorDiv.style.display='block'
@@ -114,6 +126,7 @@ function Loginpage(){
 
    }
     }
+
     function homepageusercount(){
         Axios.post("http://localhost:3001/api/getcountfromusers",{
         }).then((t)=>{
@@ -124,7 +137,7 @@ function Loginpage(){
         })
         Axios.post("http://localhost:3001/api/getratingfromreview",{
         }).then((t)=>{
-            console.log(t.data['0']['sumof'])
+            console.log(t.data['0']['sumof'],t.data['0']['count'])
             sessionStorage.setItem('rating',Math.floor(t.data['0']['sumof']/t.data['0']['count']))
             console.log(sessionStorage)
         })
@@ -175,6 +188,8 @@ function Loginpage(){
     
     function Login(e){
         e.preventDefault();
+        const tag1=document.querySelector('#loadingGIF')
+        tag1.style.display='block'
         Axios.post('http://localhost:3001/api/login',{
             email:email,
             pwd:pwd,
@@ -406,7 +421,13 @@ function Loginpage(){
                         <Form.Check type="checkbox" label='Remember me'></Form.Check>
                         </Form.Group>
                         <Button type="submit" variant="primary" id="FormButton" to="/hii">
-                            Submit
+                            <Row className="justify-content-center">
+                                <span id="loadingGIF">
+                                    <Spinner animation="border"  variant="light" role="status" size="sm">
+                                        <span className="sr-only">Loading...</span>
+                                    </Spinner>
+                                </span>  Submit
+                            </Row>
                         </Button>
                     </Form>
                     
@@ -505,7 +526,13 @@ function Loginpage(){
                             
                         </Form.Group>
                         <Button type="submit" variant="primary">
-                            Register
+                            <Row className="justify-content-center">
+                                <span id="loadingGIF">
+                                    <Spinner animation="border"  variant="light" role="status">
+                                        <span className="sr-only">Loading...</span>
+                                    </Spinner>
+                                </span> Register
+                            </Row>
                         </Button>
                     </Form>
 

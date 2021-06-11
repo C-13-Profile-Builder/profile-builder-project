@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup,Link} from 'react-bootstrap'
+import {Button,Navbar,NavDropdown,Nav,Form,Carousel,Col,Row,Image,InputGroup,Link, ModalBody} from 'react-bootstrap'
 import './homepage.css'
 import {useParams,useHistory} from 'react-router-dom'
 import Axios from 'axios'
@@ -13,7 +13,7 @@ import {BsStarFill,BsStarHalf,BsStar} from 'react-icons/bs'
 import {ImHappy2} from 'react-icons/im'
 import {IoMdNotifications} from 'react-icons/io'
 import {GiTeacher,GiThink} from 'react-icons/gi'
-import {FcFeedback} from 'react-icons/fc'
+import {FcFeedback,FcInfo} from 'react-icons/fc'
 import {FaExclamation} from 'react-icons/fa'
 import {RiNumber0,RiNumber1,RiNumber2,RiNumber3,RiNumber4,RiNumber5,RiNumber6,RiNumber7,RiNumber8,RiNumber9} from 'react-icons/ri'
 import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight, AiFillDelete} from 'react-icons/ai'
@@ -77,7 +77,7 @@ function Homepage(props) {
     const [hoverrating, setHoverrating] = React.useState(-1);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    
+    const [documentname,setdocumentname]=useState('PB-HomePage')
     const handleCloseprofileinnetworks =() => setshowprofileinnetworks(false);
     const handlemsgShow =() => setmsgShow(false)
     var [dropdownoptions,setdropdownoptions]=useState([])
@@ -94,7 +94,9 @@ function Homepage(props) {
     var handleClosernotification=()=>{setnotificationShow(false);localStorage.setItem("Booleannoti",false);localStorage.removeItem("notificationProfile");console.log(localStorage)};
     const [ratingshow, setShowrating] = useState(rating==='false'?false:true);
     const handleCloserating = () => {setShowrating(false);setnotificationShow(localStorage.getItem('Booleannoti')==='false'?false:true)};
-    
+    var [popupmsg,setpopupmsg]=useState(false)
+    var [textpopupmsg,settextpopupmsg]=useState('')
+    var handleclosepopupmsg=()=> setpopupmsg(false)
         const starrat={
             '0':<p><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
             '0.5':<p><BsStarHalf size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/><BsStar size='7vh'/></p>,
@@ -147,10 +149,11 @@ function Homepage(props) {
     searchdropdown()
     
     useEffect(() => {
-        document.title = "ProfileBuilder";
+        document.title = documentname;
       });
 
     function profile(NameClass){
+        
         console.log(window.notificationdet,localStorage)
         const name=document.querySelector('.'+NameClass)
         const profiles=document.querySelector('.Profile')
@@ -158,7 +161,7 @@ function Homepage(props) {
         profiles.style.display='block'
         const faculty_or_not=document.querySelector('#GoogleSDetails')
         const profilearticle=document.querySelector('#GoogleSDetailsArticles')
-        
+        setdocumentname('PB-ProfilePage')
         historyArray.push(NameClass)
         Axios.post('http://localhost:3001/api/getDetails',{
             email:uname
@@ -240,7 +243,7 @@ function Homepage(props) {
                 givenby:saPlatform,
                 url:saurl,
             }).then((t1)=>{
-                alert(t1.data)
+                
                 Axios.post("http://localhost:3001/api/selectFromSA",{
                     userid:userid,
                 }).then((t)=>{
@@ -250,6 +253,9 @@ function Homepage(props) {
                     tag.style.display='block';
                 })
             })
+            settextpopupmsg('Accomplishment Added')
+            setpopupmsg(true)
+            setTimeout(() => {setpopupmsg(false)}, 2000);
         }
         else{
             console.log("Faculty....")
@@ -259,7 +265,7 @@ function Homepage(props) {
                 year:saPlatform,
                 authors:saurl,
             }).then((t1)=>{
-                alert("Success")
+                
                 console.log(t1.data)
                 profilePagination(paginationpageno)
                 profile('Profile')
@@ -268,7 +274,12 @@ function Homepage(props) {
                     gsarticleid:t1.data,
                 })
             })
+            settextpopupmsg('Article Added')
+            setpopupmsg(true)
+            setTimeout(() => {setpopupmsg(false)}, 2000);
+            
         }
+        
     }
     const paginationpagechange=(event,value)=>{
         setpaginationpageno(value)
@@ -298,7 +309,10 @@ function Homepage(props) {
         }).then((t)=>{
             console.log(t)
             if(t.data=="Success"){
-                alert("Delete Succcessful")
+                settextpopupmsg('Article Deleted')
+                setpopupmsg(true)
+                setTimeout(() => {setpopupmsg(false)}, 2000);
+                
                 profilePagination(paginationpageno)
                 profile('Profile')
             }
@@ -306,6 +320,7 @@ function Homepage(props) {
                 alert("Delete failed")
             }
         })
+        
     }
 
     function update(){
@@ -317,7 +332,10 @@ function Homepage(props) {
         phno:phno,
         summary:summary,
         }).then(()=>{
-            alert("Update Successful")
+            settextpopupmsg('Update Successful')
+            setpopupmsg(true)
+            setTimeout(() => {setpopupmsg(false)}, 2000);
+            
         })
     }
 
@@ -431,6 +449,7 @@ function Homepage(props) {
         nc.style.display='none'
         IndividualFacultyProfile.style.display='block'
         historyArray.push(NameClass)
+        setdocumentname('PB-Profile')
         console.log(gsid)
         Axios.post("http://localhost:3001/api/generateallarticleOfAFaculty",{
             gsid:gsid
@@ -516,7 +535,7 @@ function Homepage(props) {
         const name=document.querySelector('.'+NameClass)
         name.style.display='none'
         favorite.style.display='block'
-        
+        setdocumentname('PB-Favorites')
         Axios.post("http://localhost:3001/api/getDetails",{
             email:uname
         }).then((result)=>{
@@ -539,6 +558,9 @@ function Homepage(props) {
                 gsid:gs_id,
             }).then((res)=>{
                 console.log(res.data)
+                settextpopupmsg('Removed From favorites')
+                setpopupmsg(true)
+                setTimeout(()=>{setpopupmsg(false),2000})
                 if(res.data=="Success"){
                     DisplayFavorites("displayFavorites")
                 }
@@ -622,6 +644,7 @@ function Homepage(props) {
         const home=document.querySelector('.home')
         home.style.display='none'
         historyArray.push('home')
+        setdocumentname('PB-ProfileNetwork')
         Axios.post("http://localhost:3001/api/getDetails",{
                 email:uname,
             }).then((t)=>{
@@ -1365,8 +1388,16 @@ function Homepage(props) {
                     <Button variant="primary" onClick={update_review}>Submit</Button>
                 </Modal.Footer>
             </Modal>
-            
-            <Modal show={notificationShow} onHide={handleClosernotification}  animation={true}>
+            <Modal show={popupmsg} onHide={handleclosepopupmsg} animation={true}>
+                <div className="d-flex justify-content-center">
+                    
+                        <Modal.Title><FcInfo size='5vh'/></Modal.Title>
+                </div>
+                <div className="d-flex justify-content-center">
+                    <Modal.Body> <center><span style={{fontSize:'3vh'}}>{textpopupmsg}</span></center></Modal.Body>
+                </div>
+            </Modal>
+            <Modal show={notificationShow} onHide={handleClosernotification}  animation={true} centered>
                 <Modal.Header closeButton>
                 <Modal.Title><IoMdNotifications size='5vh'/> NOTIFICATION</Modal.Title>
                 </Modal.Header>

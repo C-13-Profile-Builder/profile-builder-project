@@ -139,3 +139,7 @@ Form.check[label]{
 .form-check-label{
     color:azure;
 }
+#loadingGIF{
+    display:none;
+    
+}
