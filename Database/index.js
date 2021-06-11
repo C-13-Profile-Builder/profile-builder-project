@@ -5,9 +5,11 @@ const mysql=require('mysql');
 const request = require("request");
 const cheerio = require('cheerio'); 
 const cors=require('cors');
+const path = require('path');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json())
 app.use(cors())
+app.use(express.static(path.join(__dirname, '../build')));
 const db=mysql.createConnection({
     host:'localhost',
     port:3306,
@@ -608,7 +610,8 @@ app.post('/gs/generate', (req, res) => {
 });
 
 app.get('/',(req,res)=>{
-    res.send("frty")
+    //res.send("frty")
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 })
 //select from amrpub
 app.post("/api/generatepublicationfromamrpub",(req,res)=>{
