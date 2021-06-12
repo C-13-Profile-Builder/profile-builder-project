@@ -15,7 +15,7 @@ function Changepwd() {
         e.preventDefault();
         console.log(uname,newpwd,confirmnewpwd)
         if(newpwd===confirmnewpwd && newpwd!=''){
-            Axios.post('http://localhost:3001/api/updatePassword',{
+            Axios.post('http://34.67.187.5:5000/api/updatePassword',{
                 email:uname,
                 pwd:newpwd,
             }).then((res)=>{

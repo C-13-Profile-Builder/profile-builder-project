@@ -10,7 +10,7 @@ function Activateaccount() {
     let {uname}=useParams()
     function reactivate(){
         console.log("gtreuwhlawljsaks")
-        Axios.post("http://localhost:3001/api/updateActivate_account",{
+        Axios.post("http://34.67.187.5:5000/api/updateActivate_account",{
             email:uname,
             yes_no:'Y',
         })

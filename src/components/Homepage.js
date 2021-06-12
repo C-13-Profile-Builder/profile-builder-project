@@ -30,7 +30,7 @@ var userchoice=[]
 function searchdropdown() {
     var i=0
     userchoice=[]
-    Axios.post("http://localhost:3001/api/getForDropdown",{}).then((t)=>{
+    Axios.post("http://34.67.187.5:5000/api/getForDropdown",{}).then((t)=>{
     for(i=0;i<t.data[0].length;i++){
         userchoice.push(t.data[0][i]['prf_name'])
     }
@@ -169,7 +169,7 @@ function Homepage(props) {
         const profilearticle=document.querySelector('#GoogleSDetailsArticles')
         setdocumentname('PB-ProfilePage')
         historyArray.push(NameClass)
-        Axios.post('http://localhost:3001/api/getDetails',{
+        Axios.post('http://34.67.187.5:5000/api/getDetails',{
             email:uname
         }).then((det)=>{
             setuserid(det.data['0']['id'])
@@ -184,7 +184,7 @@ function Homepage(props) {
                 setstudent_or_faculty('N')
                 faculty_or_not.style.display='block';
                 profilearticle.style.display='block'
-                Axios.post('http://localhost:3001/api/getgsdetailsgorprofile',{
+                Axios.post('http://34.67.187.5:5000/api/getgsdetailsgorprofile',{
                     mail:uname
                 }).then((result)=>{
                     var i;
@@ -205,7 +205,7 @@ function Homepage(props) {
             }
             else{
                 setstudent_or_faculty('Y')
-                Axios.post("http://localhost:3001/api/selectFromSA",{
+                Axios.post("http://34.67.187.5:5000/api/selectFromSA",{
                     userid:det.data['0']['id'],
                 }).then((t)=>{
                     console.log(t)
@@ -223,14 +223,14 @@ function Homepage(props) {
     
     function delete_fromstudentsAccomplisments(id,course,platform,url){
         console.log(id,course,platform,url)
-        Axios.post("http://localhost:3001/api/deleteFromSA",{
+        Axios.post("http://34.67.187.5:5000/api/deleteFromSA",{
             userid:id,
             course:course,
             platform:platform,
             curl:url,
         }).then((t)=>{
             alert(t.data)
-            Axios.post("http://localhost:3001/api/selectFromSA",{
+            Axios.post("http://34.67.187.5:5000/api/selectFromSA",{
                     userid:userid,
                 }).then((t)=>{
                     setshowStudAcheivements(t.data)
@@ -243,14 +243,14 @@ function Homepage(props) {
     }
     function addAccomplishments_articles(type){
         if(type==='student'){
-            Axios.post("http://localhost:3001/api/insertIntoSA",{
+            Axios.post("http://34.67.187.5:5000/api/insertIntoSA",{
                 userid:userid,
                 course:saCourse,
                 givenby:saPlatform,
                 url:saurl,
             }).then((t1)=>{
                 
-                Axios.post("http://localhost:3001/api/selectFromSA",{
+                Axios.post("http://34.67.187.5:5000/api/selectFromSA",{
                     userid:userid,
                 }).then((t)=>{
                     setshowStudAcheivements(t.data)
@@ -265,7 +265,7 @@ function Homepage(props) {
         }
         else{
             console.log("Faculty....")
-            Axios.post("http://localhost:3001/api/insertintogsprofile",{
+            Axios.post("http://34.67.187.5:5000/api/insertintogsprofile",{
                 id:userid,
                 title:saCourse,
                 year:saPlatform,
@@ -275,7 +275,7 @@ function Homepage(props) {
                 console.log(t1.data)
                 profilePagination(paginationpageno)
                 profile('Profile')
-                Axios.post("http://localhost:3001/api/insertnotification",{
+                Axios.post("http://34.67.187.5:5000/api/insertnotification",{
                     userid:userid,
                     gsarticleid:t1.data,
                 })
@@ -294,7 +294,7 @@ function Homepage(props) {
     function profilePagination(val){
         console.log(val)
         var arr=[]
-        Axios.post("http://localhost:3001/api/generatearticlesinprofile",{
+        Axios.post("http://34.67.187.5:5000/api/generatearticlesinprofile",{
             mail:uname
         }).then((result)=>{
             setarticles(result.data)
@@ -310,7 +310,7 @@ function Homepage(props) {
 
     function deletegsarticle(id,value){
         console.log("Hii",id,value)
-        Axios.post("http://localhost:3001/api/deletegsarticles",{
+        Axios.post("http://34.67.187.5:5000/api/deletegsarticles",{
             id:id
         }).then((t)=>{
             console.log(t)
@@ -331,7 +331,7 @@ function Homepage(props) {
 
     function update(){
         console.log(fname)
-        Axios.post('http://localhost:3001/api/update',{
+        Axios.post('http://34.67.187.5:5000/api/update',{
         firstname:fname,
         lastname:lname,
         email:email,
@@ -365,7 +365,7 @@ function Homepage(props) {
 
 
     function deleteProf(){
-        Axios.post('http://localhost:3001/api/delete',{
+        Axios.post('http://34.67.187.5:5000/api/delete',{
             email:uname,
         }).then(()=>{
             GotoLogin();
@@ -373,11 +373,11 @@ function Homepage(props) {
     }
 
     function insertHistory(relation) {
-        Axios.post('http://localhost:3001/api/getDetails', {
+        Axios.post('http://34.67.187.5:5000/api/getDetails', {
             email: uname
         }).then((result) => {
             console.log(result.data[0]['id'], relation.data[0]['gs_id'])
-            Axios.post('http://localhost:3001/api/insertBrowserHistory', {
+            Axios.post('http://34.67.187.5:5000/api/insertBrowserHistory', {
                 id: result.data[0]['id'],
                 gs_id: relation.data[0]['gs_id'],
 
@@ -399,11 +399,11 @@ function Homepage(props) {
         history.style.display = 'block';
         
 
-        Axios.post("http://localhost:3001/api/getDetails", {
+        Axios.post("http://34.67.187.5:5000/api/getDetails", {
             email: uname
         }).then((result) => {
             //console.log("result = ",result.data)
-            Axios.post("http://localhost:3001/api/history", {
+            Axios.post("http://34.67.187.5:5000/api/history", {
                 id: result.data[0]['id'],
             }).then((res) => {
                 //console.log("res = ",res.data)
@@ -413,11 +413,11 @@ function Homepage(props) {
     }
 
     function DeleteHistoryItem(gs_id){
-        Axios.post('http://localhost:3001/api/getDetails',{
+        Axios.post('http://34.67.187.5:5000/api/getDetails',{
             email: uname
         }).then((result)=>{
             console.log(result.data)
-            Axios.post('http://localhost:3001/api/deleteHistoryItem',{
+            Axios.post('http://34.67.187.5:5000/api/deleteHistoryItem',{
                 id: result.data['0']['id'],
                 gsid: gs_id
             }).then((res)=>{
@@ -432,7 +432,7 @@ function Homepage(props) {
     function ProfileGenerate(from){
         historyArray.push(from)
         if(profilegenerate!=''){
-            Axios.post('http://localhost:3001/api/generate',{
+            Axios.post('http://34.67.187.5:5000/api/generate',{
               subject_name: profilegenerate
             }).then((result)=>{
                 setFacultyProfileData(result.data)
@@ -457,7 +457,7 @@ function Homepage(props) {
         historyArray.push(NameClass)
         setdocumentname('PB-Profile')
         console.log(gsid)
-        Axios.post("http://localhost:3001/api/generateallarticleOfAFaculty",{
+        Axios.post("http://34.67.187.5:5000/api/generateallarticleOfAFaculty",{
             gsid:gsid
         }).then((res)=>{
             setIndividualProfile(res.data['1'])
@@ -466,10 +466,10 @@ function Homepage(props) {
             setarticles(res.data['2'])
             console.log(articles)
         })
-        Axios.post("http://localhost:3001/api/idgsprofile",{
+        Axios.post("http://34.67.187.5:5000/api/idgsprofile",{
             gsid:gsid,
         }).then((t)=>{
-            Axios.post("http://localhost:3001/api/generatepublicationfromamrpub",{
+            Axios.post("http://34.67.187.5:5000/api/generatepublicationfromamrpub",{
                 userid:t.data['0']['id'],
             }).then((z)=>{
                 console.log(z)
@@ -478,14 +478,14 @@ function Homepage(props) {
             })
         })
         
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
                 email:uname,
             }).then((t)=>{
                 
-                Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
+                Axios.post("http://34.67.187.5:5000/api/getDetailsfromgsprofile",{
                     gsid:gsid,
                     }).then((t1)=>{
-                        Axios.post("http://localhost:3001/api/getDetailsfromconnectrequest",{
+                        Axios.post("http://34.67.187.5:5000/api/getDetailsfromconnectrequest",{
                             fromid:t.data[0]['id'],
                             toid:t1.data[0]['id'],
                             }).then((t2)=>{
@@ -513,11 +513,11 @@ function Homepage(props) {
     
 
     function AddToFavorites(gs_id){
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
             email:uname
         }).then((result)=>{
             console.log(result)
-            Axios.post("http://localhost:3001/api/insertFavorites",{
+            Axios.post("http://34.67.187.5:5000/api/insertFavorites",{
                 id:result.data['0']['id'],
                 gsid:gs_id,
             }).then((res)=>{
@@ -542,10 +542,10 @@ function Homepage(props) {
         name.style.display='none'
         favorite.style.display='block'
         setdocumentname('PB-Favorites')
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
             email:uname
         }).then((result)=>{
-            Axios.post("http://localhost:3001/api/favorites",{
+            Axios.post("http://34.67.187.5:5000/api/favorites",{
                 id:result.data['0']['id'],
             }).then((res)=>{
                 console.log(res.data)
@@ -555,11 +555,11 @@ function Homepage(props) {
         })
     }
     function RemoveFromFavorites(gs_id){
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
             email:uname
         }).then((result)=>{
             console.log(result)
-            Axios.post("http://localhost:3001/api/deleteFavorites",{
+            Axios.post("http://34.67.187.5:5000/api/deleteFavorites",{
                 id:result.data['0']['id'],
                 gsid:gs_id,
             }).then((res)=>{
@@ -586,7 +586,7 @@ function Homepage(props) {
     }
 
     function update_review(){
-        Axios.post("http://localhost:3001/api/updatereview",{
+        Axios.post("http://34.67.187.5:5000/api/updatereview",{
             email:uname,
             rating:ratingvalue,
         })
@@ -609,7 +609,7 @@ function Homepage(props) {
     }
     function submitreport(){
         if(reportstated!==''){
-            Axios.post("http://localhost:3001/api/submit_report",{
+            Axios.post("http://34.67.187.5:5000/api/submit_report",{
                 email:uname,
                 report:reportstated,
             }).then((t)=>{
@@ -625,13 +625,13 @@ function Homepage(props) {
 
     function connectwith(togsid){
         if(connection_status==='Connect'){
-            Axios.post("http://localhost:3001/api/getDetails",{
+            Axios.post("http://34.67.187.5:5000/api/getDetails",{
                 email:uname,
             }).then((t)=>{
-                Axios.post("http://localhost:3001/api/getDetailsfromgsprofile",{
+                Axios.post("http://34.67.187.5:5000/api/getDetailsfromgsprofile",{
                     gsid:togsid,
                     }).then((t1)=>{
-                        Axios.post("http://localhost:3001/api/connectrequest",{
+                        Axios.post("http://34.67.187.5:5000/api/connectrequest",{
                             fromid:t.data[0]['id'],
                             toid:t1.data[0]['id'],
                             }).then((t2)=>{
@@ -651,13 +651,13 @@ function Homepage(props) {
         home.style.display='none'
         historyArray.push('home')
         setdocumentname('PB-ProfileNetwork')
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
                 email:uname,
             }).then((t)=>{
                 if(t.data[0]['Faculty']==='N'){
                     const onlyForstudent=document.querySelector('#onlyForstudent')
                     onlyForstudent.style.display='block'
-                    Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                    Axios.post("http://34.67.187.5:5000/api/getnetworkdetailsfromrequest",{
                     fromid:t.data[0]['id'],
                     status:'W',
                     }).then((t1)=>{
@@ -666,7 +666,7 @@ function Homepage(props) {
                             arr.push(t1.data[i]['to_id'])
                         }
                         
-                            Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                            Axios.post("http://34.67.187.5:5000/api/selectfromgsprofilefornetworkdetails",{
                             id:arr,
                             }).then((t2)=>{
                                 const wrt=document.querySelector('#Waiting_requests_there');
@@ -686,7 +686,7 @@ function Homepage(props) {
                             })
                         
                     })
-                    Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                    Axios.post("http://34.67.187.5:5000/api/getnetworkdetailsfromrequest",{
                 fromid:t.data[0]['id'],
                 status:'A',
                 }).then((t1)=>{
@@ -694,7 +694,7 @@ function Homepage(props) {
                     for(var i=0;i<t1.data.length;i++){
                         arr.push(t1.data[i]['to_id'])
                     }
-                    Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                    Axios.post("http://34.67.187.5:5000/api/selectfromgsprofilefornetworkdetails",{
                     id:arr,
                     }).then((t2)=>{
                         const art=document.querySelector('#Accepted_requests_there');
@@ -711,7 +711,7 @@ function Homepage(props) {
                     })
                 })
 
-                Axios.post("http://localhost:3001/api/getnetworkdetailsfromrequest",{
+                Axios.post("http://34.67.187.5:5000/api/getnetworkdetailsfromrequest",{
                 fromid:t.data[0]['id'],
                 status:'D',
                 }).then((t1)=>{
@@ -719,7 +719,7 @@ function Homepage(props) {
                     for(var i=0;i<t1.data.length;i++){
                         arr.push(t1.data[i]['to_id'])
                     }
-                    Axios.post("http://localhost:3001/api/selectfromgsprofilefornetworkdetails",{
+                    Axios.post("http://34.67.187.5:5000/api/selectfromgsprofilefornetworkdetails",{
                     id:arr,
                     }).then((t2)=>{
                         const drt=document.querySelector('#Denied_requests_there');
@@ -740,7 +740,7 @@ function Homepage(props) {
                 else{
                     const onlyForstudent=document.querySelector('#onlyForstudent')
                     onlyForstudent.style.display='none'
-                    Axios.post("http://localhost:3001/api/getnetworkdetailstorequest",{
+                    Axios.post("http://34.67.187.5:5000/api/getnetworkdetailstorequest",{
                     toid:t.data[0]['id'],
                     status:'W',
                     }).then((t1)=>{
@@ -748,7 +748,7 @@ function Homepage(props) {
                         for(var i=0;i<t1.data.length;i++){
                             arr.push(t1.data[i]['from_id'])
                         }
-                            Axios.post("http://localhost:3001/api/selectfromuserfornetworkdetails",{
+                            Axios.post("http://34.67.187.5:5000/api/selectfromuserfornetworkdetails",{
                             id:arr,
                             }).then((t2)=>{
                                 //console.log(t2.data)
@@ -769,7 +769,7 @@ function Homepage(props) {
                         
                     })
 
-                    Axios.post("http://localhost:3001/api/getnetworkdetailstorequest",{
+                    Axios.post("http://34.67.187.5:5000/api/getnetworkdetailstorequest",{
                     toid:t.data[0]['id'],
                     status:'A',
                     }).then((t1)=>{
@@ -778,7 +778,7 @@ function Homepage(props) {
                             arr.push(t1.data[i]['from_id'])
                         }
                         
-                            Axios.post("http://localhost:3001/api/selectfromuserfornetworkdetails",{
+                            Axios.post("http://34.67.187.5:5000/api/selectfromuserfornetworkdetails",{
                             id:arr,
                             }).then((t2)=>{
                                 //console.log(t2.data)
@@ -805,7 +805,7 @@ function Homepage(props) {
     }
     function studentProfile(usid,name){
         
-        Axios.post("http://localhost:3001/api/selectFromSA",{
+        Axios.post("http://34.67.187.5:5000/api/selectFromSA",{
             userid:usid,
         }).then((t)=>{
             console.log(t)
@@ -815,11 +815,11 @@ function Homepage(props) {
         })
     }
     function changeRequeststatus(type,fromid){
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
             email:uname
         }).then((t)=>{
             if(type=='Ignore'){
-                Axios.post("http://localhost:3001/api/updateRequestTable",{
+                Axios.post("http://34.67.187.5:5000/api/updateRequestTable",{
                     toid:t.data[0]['id'],
                     fromid:fromid,
                     status:'D',
@@ -828,7 +828,7 @@ function Homepage(props) {
                 })
             }
             else{
-                Axios.post("http://localhost:3001/api/updateRequestTable",{
+                Axios.post("http://34.67.187.5:5000/api/updateRequestTable",{
                     toid:t.data[0]['id'],
                     fromid:fromid,
                     status:'A',

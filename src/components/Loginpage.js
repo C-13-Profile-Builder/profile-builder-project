@@ -77,7 +77,7 @@ function Loginpage(){
     const errorDiv=document.querySelector('.errorDiv')
     if(Errorstag.length==0)
     {
-        Axios.post('http://localhost:3001/api/register',
+        Axios.post('http://34.67.187.5:5000/api/register',
         {firstname:firstname,
         lastname:lastname,
         dob:dob,
@@ -94,18 +94,18 @@ function Loginpage(){
         errorDiv.style.display='none'
         homepageusercount();
         if(!Studentcheck){
-            Axios.post('http://localhost:3001/api/getDetails',{
+            Axios.post('http://34.67.187.5:5000/api/getDetails',{
             email:email
             }).then((result)=>{
                 console.log(result,result.data['0']['id'])
-                Axios.post('http://localhost:3001/gs/generate',
+                Axios.post('http://34.67.187.5:5000/gs/generate',
                 {
                 GS_ID:urlParams.get('user'),
                 userid:result.data['0']['id'],
                 })
                 console.log("helloguyss",fac_weburl,result.data['0']['id'])
                 if(fac_weburl!==''){
-                    Axios.post('http://localhost:3001/api/amrgenerate',
+                    Axios.post('http://34.67.187.5:5000/api/amrgenerate',
                     {
                     amrid:fac_weburl,
                     userid:result.data['0']['id'],
@@ -134,14 +134,14 @@ function Loginpage(){
     }
 
     function homepageusercount(){
-        Axios.post("http://localhost:3001/api/getcountfromusers",{
+        Axios.post("http://34.67.187.5:5000/api/getcountfromusers",{
         }).then((t)=>{
             console.log(t)
             sessionStorage.setItem("totalusers",t.data['0']['0']['count'])
             sessionStorage.setItem("Facusers",t.data['1']['0']['count'])
             sessionStorage.setItem("Studusers",t.data['2']['0']['count'])
         })
-        Axios.post("http://localhost:3001/api/getratingfromreview",{
+        Axios.post("http://34.67.187.5:5000/api/getratingfromreview",{
         }).then((t)=>{
             console.log(t.data['0']['sumof'],t.data['0']['count'])
             sessionStorage.setItem('rating',Math.floor(t.data['0']['sumof']/t.data['0']['count']))
@@ -149,11 +149,11 @@ function Loginpage(){
         })
     }
     function getNotification(type){
-        Axios.post("http://localhost:3001/api/getdetails",{
+        Axios.post("http://34.67.187.5:5000/api/getdetails",{
             email:email,
         }).then((t)=>{
             if(t.data['0']['Faculty']==="N"){
-                Axios.post("http://localhost:3001/api/selectnotification",{
+                Axios.post("http://34.67.187.5:5000/api/selectnotification",{
                     stid:t.data['0']['id'],
                 }).then((t1)=>{
                     if(t1.data.length>0){
@@ -181,7 +181,7 @@ function Loginpage(){
                     history.push("/homepage/"+email+'/'+type);
                 }
                 })
-                Axios.post("http://localhost:3001/api/deletenotification",{
+                Axios.post("http://34.67.187.5:5000/api/deletenotification",{
                     stid:t.data['0']['id'],
                 })
             }
@@ -196,7 +196,7 @@ function Loginpage(){
         e.preventDefault();
         const tag1=document.querySelector('#loadingGIF')
         tag1.style.display='block'
-        Axios.post('http://localhost:3001/api/login',{
+        Axios.post('http://34.67.187.5:5000/api/login',{
             email:email,
             pwd:pwd,
         }).then((l)=>{
@@ -206,7 +206,7 @@ function Loginpage(){
             const errorDivRegister=document.querySelector('.errorDivRegister')
         if(l.data=="Yes"){
             console.log("e:"+email)
-            Axios.post("http://localhost:3001/api/showRating",{
+            Axios.post("http://34.67.187.5:5000/api/showRating",{
                 email:email,
                 }).then((t)=>{
                     console.log(t)
@@ -244,7 +244,7 @@ function Loginpage(){
         }
         console.log("ght "+countoflogin)
         if(countoflogin>=2){
-            Axios.post("http://localhost:3001/api/updateActivate_account",{
+            Axios.post("http://34.67.187.5:5000/api/updateActivate_account",{
                 email:email,
                 yes_no:'N',
                 }).then((t)=>{
@@ -354,7 +354,7 @@ function Loginpage(){
     }
     function activateAccount(e){
         const tag1=document.querySelector('.errorInactivatemodal')
-        Axios.post("http://localhost:3001/api/getDetails",{
+        Axios.post("http://34.67.187.5:5000/api/getDetails",{
             email:sendEmail,
         }).then((t)=>{
             console.log(t)
@@ -426,7 +426,7 @@ function Loginpage(){
     const errorDiv=document.querySelector('.errorDiv')
     if(Errorstag.length==0)
     {
-        Axios.post('http://localhost:3001/api/register',
+        Axios.post('http://34.67.187.5:5000/api/register',
         {firstname:firstname,
         lastname:lastname,
         dob:dob,
@@ -443,18 +443,18 @@ function Loginpage(){
         errorDiv.style.display='none'
         homepageusercount();
         if(!Studentcheck){
-            Axios.post('http://localhost:3001/api/getDetails',{
+            Axios.post('http://34.67.187.5:5000/api/getDetails',{
             email:email
             }).then((result)=>{
                 console.log(result,result.data['0']['id'])
-                Axios.post('http://localhost:3001/gs/generate',
+                Axios.post('http://34.67.187.5:5000/gs/generate',
                 {
                 GS_ID:urlParams.get('user'),
                 userid:result.data['0']['id'],
                 })
                 console.log("helloguyss",fac_weburl,result.data['0']['id'])
                 if(fac_weburl!==''){
-                    Axios.post('http://localhost:3001/api/amrgenerate',
+                    Axios.post('http://34.67.187.5:5000/api/amrgenerate',
                     {
                     amrid:fac_weburl,
                     userid:result.data['0']['id'],

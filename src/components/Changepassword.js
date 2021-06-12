@@ -17,7 +17,7 @@ function Changepassword() {
         let {email}=useParams()
         console.log(email,newPwd,confirmnewPwd)
         if(newPwd===confirmnewPwd && newPwd===''){
-            Axios.post('http://localhost:3001/api/updatePassword',{
+            Axios.post('http://34.67.187.5:5000/api/updatePassword',{
                 email:email,
                 pwd:newPwd,
             }).then((res)=>{
