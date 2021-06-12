@@ -53,6 +53,12 @@ body,.container-fluid{
     font-style: italic;
 }
 
+#formlabel1{
+    color:black;
+    font-weight: bold;
+    font-style: italic;
+}
+
 Form{
     padding-top:20px;
 }
@@ -143,3 +149,9 @@ Form.check[label]{
     display:none;
     
 }
+
+@keyframes login_register {
+    0%   {opacity:0}
+    50%  {opacity:0.50}
+    100% {opacity:1}
+  }

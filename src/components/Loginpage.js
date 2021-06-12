@@ -7,10 +7,15 @@ import {ImProfile} from 'react-icons/im'
 import {FaExclamation} from 'react-icons/fa'
 import {RiNumber0,RiNumber1,RiNumber2} from "react-icons/ri"
 import { Router, Route, Switch, BrowserRouter,useHistory } from 'react-router-dom';
+import { GoogleLogin } from 'react-google-login';
+import {FcGoogle} from "react-icons/fc"
 var Errorstag=[]
+
 
 function Loginpage(){
     let history=useHistory()
+    const [show1, setShow1] = useState(false);
+    const handleClose1 = () => setShow1(false);
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const [firstname,setfirstname]=useState('');
@@ -106,8 +111,9 @@ function Loginpage(){
                     userid:result.data['0']['id'],
                     })
                 }
+                history.push("/homepage/"+email+'/'+false)
                 })
-            history.push("/homepage/"+email+'/'+false)
+            
         }
         else{
             history.push("/homepage/"+email+'/'+false)
@@ -261,6 +267,8 @@ function Loginpage(){
         if(type=="register"){
             loginform.style.display='none'
             registerform.style.display='block'
+            registerform.style.animationName='login_register'
+            registerform.style.animationDuration='1s'
             register.style.fontSize='large'
             register.style.fontWeight='bold'
             register.style.textDecoration='underline'
@@ -270,9 +278,10 @@ function Loginpage(){
     
         }
         else if(type=="login"){
-            loginform.style.display='block'
             registerform.style.display='none'
-    
+            loginform.style.display='block'            
+            loginform.style.animationName='login_register'
+            loginform.style.animationDuration='1s'
             login.style.fontSize='large'
             login.style.fontWeight='bold'
             login.style.textDecoration='underline'
@@ -282,19 +291,24 @@ function Loginpage(){
         }
     }
     function student_facultycheck(type)
-    {
-        const gsurl=document.getElementById('GsURL')
+    {   console.log("in",type)
+        const gsurl=document.querySelectorAll('#GsURL')
+        console.log(gsurl)
         if(type=='student'){
             setStudentcheck(true)
             setFacultycheck(false)
             console.log("In student")
-            gsurl.style.display='none'
+            gsurl.forEach((index)=>{
+                index.style.display='none'
+            })
         }
         else{
             setStudentcheck(false)
             setFacultycheck(true)
             console.log("In faculty")
-            gsurl.style.display='block'
+            gsurl.forEach((index)=>{
+                index.style.display='block'
+            })
 
         }
     }
@@ -321,8 +335,10 @@ function Loginpage(){
         const loginform=document.getElementById('LoginForm')
         const errorDiv=document.querySelector('.errorDiv')
         errorDiv.style.display='none';
-        forgotpasswordform.style.display='block'
         loginform.style.display='none'
+        forgotpasswordform.style.display='block'
+        forgotpasswordform.style.animationName='login_register'
+        forgotpasswordform.style.animationDuration='1s'
         const formnav=document.getElementById('formnav')
         formnav.style.display='none'
     }
@@ -331,6 +347,8 @@ function Loginpage(){
         const loginform=document.getElementById('LoginForm')
         forgotpasswordform.style.display='none'
         loginform.style.display='block'
+        loginform.style.animationName='login_register'
+        loginform.style.animationDuration='1s'
         const formnav=document.getElementById('formnav')
         formnav.style.display='block'
     }
@@ -365,8 +383,193 @@ function Loginpage(){
         
     }
 
+    function responseGoogle(response){
+        console.log(response);
+        setfirstname(response.profileObj.givenName);
+        setlastname(response.profileObj.familyName);
+        setemail(response.profileObj.email)
+        setShow1(true)
+    }
+
+    function gregister(e){
+        e.preventDefault()
+        console.log("In g")
+        const tag1=document.querySelector('#loadingGIF')
+        tag1.style.display='block'
+       console.log(GSurl)
+       const urlParams = new URLSearchParams(String(GSurl));
+       console.log(GSurl)
+       console.log(urlParams.get('user'))
+    Errorstag=[]
+    if(dob===''){
+        Errorstag.push("DOB field is Empty")
+    }
+    if(phno===''){
+        Errorstag.push("Phone Number field is Empty")
+    }
+    if(!Studentcheck && !Facultycheck)
+    {
+        Errorstag.push("UserType field is Empty")   
+    }
+    if(Facultycheck && GSurl==='')
+    {
+        Errorstag.push("Faculty GS-ID field is Empty")   
+    }
+    if(pwd==''){
+        Errorstag.push("Password field is Empty")
+    }
+    if(pwd!=confirmpwd && pwd!=''){
+        Errorstag.push("Password and Confirm password fields doesnt match")
+    }
+    seterror(Errorstag);
+    console.log(dob,phno);
+    const errorDiv=document.querySelector('.errorDiv')
+    if(Errorstag.length==0)
+    {
+        Axios.post('http://localhost:3001/api/register',
+        {firstname:firstname,
+        lastname:lastname,
+        dob:dob,
+        email:email,
+        pwd:pwd,
+        phno:phno,
+        userType:Studentcheck?'N':'Y',
+        facweburl:fac_weburl,
+        GS_ID:urlParams.get('user'),
+        count:1,
+    }).then(()=>{
+        console.log(Studentcheck)
+        //history.push("/homepage/"+email+'/'+false)
+        errorDiv.style.display='none'
+        homepageusercount();
+        if(!Studentcheck){
+            Axios.post('http://localhost:3001/api/getDetails',{
+            email:email
+            }).then((result)=>{
+                console.log(result,result.data['0']['id'])
+                Axios.post('http://localhost:3001/gs/generate',
+                {
+                GS_ID:urlParams.get('user'),
+                userid:result.data['0']['id'],
+                })
+                console.log("helloguyss",fac_weburl,result.data['0']['id'])
+                if(fac_weburl!==''){
+                    Axios.post('http://localhost:3001/api/amrgenerate',
+                    {
+                    amrid:fac_weburl,
+                    userid:result.data['0']['id'],
+                    })
+                }
+                history.push("/homepage/"+email+'/'+false)
+                })
+            
+        }
+        else{
+            history.push("/homepage/"+email+'/'+false)
+        }
+    })
+   }
+
+   else
+   {        
+    errorDiv.style.display='block'
+    const errorDivLogin=document.querySelector('.errorDivLogin')
+    errorDivLogin.style.display='none'
+    const errorDivRegister=document.querySelector('.errorDivRegister')
+    errorDivRegister.style.display='block'
+    console.log(Errorstag)
+
+   }
+    }
+    
+
         return (        
             <div id="bodyClass">
+                <Modal show={show1} onHide={handleClose1} animation={true} backdrop="static" keyboard={false}>
+                <Modal.Body>
+                    <div>
+                        <Form  onSubmit={gregister}>
+                        <Form.Group controlId="birthDate">
+                            <Form.Label id="formlabel1" font-color="black">DOB</Form.Label>
+                            <Form.Control type="date" placeholder='dateOfBirth' onChange={(e)=>{setdob(e.target.value)}}/>
+                        </Form.Group>
+
+                        <Form.Group controlId="formPlaintextEmail">
+                            <Form.Label id="formlabel1" column sm="2">PhNumber</Form.Label>
+                            <Form.Row>
+                                <Col >
+                                    <Form.Control id="formlabel1" plaintext readOnly defaultValue="+91" />
+                                </Col>
+                                <Col xs={10}>
+                                    <Form.Control type="text" placeholder='PhNO' onChange={(e)=>{setphno(e.target.value)}}/>
+                                </Col>
+                            </Form.Row>
+                        </Form.Group>
+
+                        <Form.Group controlId="formPlaintextEmail">
+                            <Form.Label id="formlabel1">Are you a Student or Faculty?</Form.Label>
+                            <br></br>
+                            <Row xs={6}>
+                                <Col xs={6}>
+                                    <Form.Check inline
+                                        type="radio"
+                                        label="Faculty"
+                                        name="formHorizontalRadios"
+                                        id="formHorizontalRadios3"
+                                        style={{color:'black'}}
+                                        onChange={()=>student_facultycheck('faculty')}
+                                    />
+                            </Col>
+                                <Col xs={6}>
+                                    <Form.Check inline
+                                        type="radio"
+                                        label="Student"
+                                        name="formHorizontalRadios"
+                                        id="formHorizontalRadios4"
+                                        onChange={()=>student_facultycheck('student')}
+                                    />
+                                </Col>
+                            </Row>
+                        </Form.Group>
+
+                        <Form.Group id="GsURL">
+                            <Form.Label id="formlabel1">
+                                Google Scholar URL
+                            </Form.Label>
+                            <Form.Control type="text" placeholder='https://scholar.google.com/citations?hl=en&user=xxxxxxxxxx' onChange={(e)=>{seturl(e.target.value)}}>
+                            </Form.Control>
+
+                            <Form.Label id="formlabel1">
+                                Amrita Faculty Website URL
+                            </Form.Label>
+                            <Form.Control type="text" placeholder='https://www.amrita.edu/faculty/xxxxxxxx' onChange={(e)=>{setfacweburl(e.target.value)}}>
+                            </Form.Control>
+                        </Form.Group>
+
+                        <Form.Group controlId='formBasicPassword'>
+                            <Form.Label id="formlabel1">
+                                Password
+                            </Form.Label>
+                            <Form.Control type="password" placeholder='password' onChange={(e)=>{setpwd(e.target.value)}}>
+                            </Form.Control>
+                            
+                        </Form.Group>
+                        <Form.Group controlId='formBasicPassword'>
+                            <Form.Label id="formlabel1">
+                                Confirm Password
+                            </Form.Label>
+                            <Form.Control type="password" placeholder='Confirm_password' onChange={(e)=>{setconfirmpwd(e.target.value)}}>
+                            </Form.Control>
+                            
+                        </Form.Group>
+                        
+                        <Button type="submit" variant="primary">
+                            Register
+                        </Button>
+                        </Form>
+                    </div>
+                    </Modal.Body>
+                </Modal>
             <div className='LoginRegister'>
                 <div>
                 <Navbar sticky="top" bg='dark' expand='lg' variant='dark' >
@@ -414,7 +617,7 @@ function Loginpage(){
                         </Form.Group>
                         <Form.Group>
                             <Form.Text>
-                                <a onClick={forgotpassword} id="href">Forgot Password</a>
+                                <a onClick={forgotpassword} id="href" style={{cursor:'pointer'}}>Forgot Password?</a>
                             </Form.Text>
                         </Form.Group>
                         <Form.Group className="checkbox"> 
@@ -432,6 +635,17 @@ function Loginpage(){
                     </Form>
                     
                     <Form id="RegisterForm" onSubmit={register}>
+
+                    <div classname="Gauthlogin">
+                        <center><GoogleLogin
+                            clientId="447845982903-jn3t06v40m4s8bl1c7jms8u6cb4g9o29.apps.googleusercontent.com"
+                            buttonText="Sign Up with Google"
+                            onSuccess={responseGoogle}
+                            onFailure={responseGoogle}
+                            cookiePolicy={'single_host_origin'}/>
+                        </center>
+                        </div>
+                        <div style={{color:'azure',marginBottom:'10px',marginTop:'10px'}}><center>----------OR----------</center></div>
                         <Form.Group controlId="exampleForm.ControlTextarea1">
                             <Form.Label id="formlabel">First Name</Form.Label>
                             <Form.Control type="text" placeholder='firstname' onChange={(e)=>{
@@ -560,7 +774,7 @@ function Loginpage(){
                     <br></br>
                         <Form.Group>
                             <center><Form.Text>
-                               <a onClick={backtologin} id="href">Back to Login</a>
+                               <a onClick={backtologin} id="href" style={{cursor:'pointer'}}>Back to Login</a>
                             </Form.Text></center>
                         </Form.Group>
                     </Form>

@@ -1052,7 +1052,7 @@ function Homepage(props) {
                                     <li style={{color:'orange'}}>
                                         <Row>
                                             <Col md={6}>
-                                                <a id="networkA" onClick={()=>studentProfile(index.id,index.firstname+' '+index.lastname)} href='#' style={{fontSize:'large',fontWeight:'bolder',color:'#b2d0ec'}}>{index.firstname} {index.lastname}</a>
+                                                <a id="networkA" onClick={()=>studentProfile(index.id,index.firstname+' '+index.lastname)} href='#' style={{fontSize:'large',fontWeight:'bolder',color:'#b2d0ec'}} style={{cursor:'pointer'}}>{index.firstname} {index.lastname}</a>
                                             </Col>
                                         </Row>
                                     </li>
@@ -1509,10 +1509,10 @@ function Homepage(props) {
                                         <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
                                         </Row>
                                         <Row>
-                                            <a id="ListOfFacultiesParaLink"><AiOutlineMail size="1.5em" color="blue"/>  <span>{index.email}</span></a>
+                                            <a id="ListOfFacultiesParaLink" style={{cursor:'pointer'}}><AiOutlineMail size="1.5em" color="blue"/>  <span>{index.email}</span></a>
                                         </Row>
                                         <Row>
-                                            <a id="ListOfFacultiesParaLink"><AiOutlinePhone size="1.5em" color="blue"/>  <span>{index.phonenumber}</span></a>
+                                            <a id="ListOfFacultiesParaLink" style={{cursor:'pointer'}}><AiOutlinePhone size="1.5em" color="blue"/>  <span>{index.phonenumber}</span></a>
                                         </Row>
                                         
                                     </Col>
@@ -1637,7 +1637,7 @@ function Homepage(props) {
                                         <p id="ListOfFacultiesPara">GS ID: <span>{index.gs_id}</span></p>
                                         </Row>
                                         <Row>
-                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'displayFavorites')}>View Articles</a></span></p>
+                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={()=>ViewCompleteArticle(index.gs_id,'displayFavorites')} style={{cursor:'pointer'}}>View Articles</a></span></p>
                                         </Row>
                                     </Col>
                                 </Row>
@@ -1699,7 +1699,7 @@ function Homepage(props) {
                                                         <p id="ListOfFacultiesPara">GS ID: <span>{i.gs_id}</span></p>
                                                     </Row>
                                                     <Row>
-                                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={() => ViewCompleteArticle(i.gs_id, 'displayHistory')}>View Articles</a></span></p>
+                                                        <p id="ListOfFacultiesPara">Articles: <span><a onClick={() => ViewCompleteArticle(i.gs_id, 'displayHistory')} style={{cursor:'pointer'}}>View Articles</a></span></p>
                                                     </Row>
                                                 </Col>
                                             </Row>

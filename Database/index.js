@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(cors())
 app.use(express.static(path.join(__dirname, '../build')));
 const db=mysql.createConnection({
-    host:'localhost',
+    host:'34.68.174.195',
     port:3306,
     database:'sedb',
     user:'root',
@@ -339,6 +339,7 @@ app.post('/api/getgsdetailsgorprofile',(req,res)=>{
     const stmt1="SELECT gswork.domain FROM user,gswork where user.email=? and user.id=gswork.id"
     db.query(stmt,[mail],(err,result)=>{
         db.query(stmt1,[mail],(err1,result1)=>{
+            console.log(mail)
             res.send([result,result1])
         })
         
