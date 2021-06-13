@@ -335,11 +335,11 @@ app.post('/api/generate',(req,res)=>{
 //get GSdetails for profile page
 app.post('/api/getgsdetailsgorprofile',(req,res)=>{
     const mail=req.body.mail;
-    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_des,gsprofile.photo_url,COUNT(gsarticle.id) FROM gsprofile,user,gsarticle where user.email=? and user.id=gsprofile.id and user.id=gsarticle.id"
+    const stmt="SELECT gsprofile.gs_id,gsprofile.prf_des,gsprofile.photo_url FROM gsprofile,user,gsarticle where user.email=? and user.id=gsprofile.id and user.id=gsarticle.id"
     const stmt1="SELECT gswork.domain FROM user,gswork where user.email=? and user.id=gswork.id"
     db.query(stmt,[mail],(err,result)=>{
         db.query(stmt1,[mail],(err1,result1)=>{
-            console.log(mail)
+            console.log(result,result1)
             res.send([result,result1])
         })
         

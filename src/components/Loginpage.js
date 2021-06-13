@@ -526,6 +526,7 @@ function Loginpage(){
                                         label="Student"
                                         name="formHorizontalRadios"
                                         id="formHorizontalRadios4"
+                                        style={{color:'black'}}
                                         onChange={()=>student_facultycheck('student')}
                                     />
                                 </Col>
@@ -620,9 +621,9 @@ function Loginpage(){
                                 <a onClick={forgotpassword} id="href" style={{cursor:'pointer'}}>Forgot Password?</a>
                             </Form.Text>
                         </Form.Group>
-                        <Form.Group className="checkbox"> 
+                        {/* <Form.Group className="checkbox"> 
                         <Form.Check type="checkbox" label='Remember me'></Form.Check>
-                        </Form.Group>
+                        </Form.Group> */}
                         <Button type="submit" variant="primary" id="FormButton" to="/hii">
                             <Row className="justify-content-center">
                                 <span id="loadingGIF">

@@ -14,6 +14,7 @@ import {ImHappy2} from 'react-icons/im'
 import {IoMdNotifications} from 'react-icons/io'
 import {GiTeacher,GiThink} from 'react-icons/gi'
 import {FcFeedback,FcInfo} from 'react-icons/fc'
+import {MdSmsFailed} from 'react-icons/md'
 import {FaExclamation} from 'react-icons/fa'
 import {RiNumber0,RiNumber1,RiNumber2,RiNumber3,RiNumber4,RiNumber5,RiNumber6,RiNumber7,RiNumber8,RiNumber9} from 'react-icons/ri'
 import {AiFillCloseSquare,AiFillProfile,AiOutlineStar,AiOutlineMail,AiOutlinePhone,AiOutlineArrowRight, AiFillDelete} from 'react-icons/ai'
@@ -196,7 +197,6 @@ function Homepage(props) {
                     setgsid(result.data['0']['0']['gs_id'])
                     setgsprf_des(result.data['0']['0']['prf_des'])
                     setgsimg(result.data['0']['0']['photo_url'])
-                    setfacwork(result.data['0']['0']['COUNT(gsarticle.id)'])
                     setfacdomain(s.substring(1))
                 })
                 setpaginationpageno(1)
@@ -298,6 +298,7 @@ function Homepage(props) {
             mail:uname
         }).then((result)=>{
             setarticles(result.data)
+            setfacwork( result.data.length)
         })
         var m=Math.min(articles.length,(val-1)*3 + 3)
         for(var i=(val-1)*3;i<m;i++){
@@ -1645,8 +1646,8 @@ function Homepage(props) {
                             
                         )):
                         <div>
-                            <center><p><GiThink size='20vh' color='white' style={{padinng:'10px',borderRadius:'10px'}}/></p></center>
-                            <center><p style={{marginTop:'20px',fontSize:'8vh',fontWeight:'bolder',color:'whitesmoke'}}><FaExclamation size="1em" id="errorDivIcon"/> You have <span style={{color:'#e3a026'}}>NO FAVORITES</span></p></center>
+                            <center><p><MdSmsFailed size='20vh' color='white' style={{padinng:'10px',borderRadius:'10px'}}/></p></center>
+                            <center><p style={{marginTop:'20px',fontSize:'6vh',fontWeight:'bolder',color:'whitesmoke'}}>You have <span style={{color:'#e3a026'}}>NO FAVORITES</span></p></center>
                         </div>
                         }
                         
@@ -1707,8 +1708,7 @@ function Homepage(props) {
                                     )
                                 })}
                             </div>
-                        )
-                        )
+                        ))
                         }
                     </div>
                 </div>
